@@ -13,10 +13,10 @@ const attendanceServices = {
       try {
         //trạng thái checkin checkout
         var CHECK_IN = await db.User_Attendance_Statuses.findOne({
-          where: { CD: "CHECK IN" },
+          where: { CD: "IN" },
         });
         var CHECK_OUT = await db.User_Attendance_Statuses.findOne({
-          where: { CD: "CHECK OUT" },
+          where: { CD: "OUT" },
         });
         var idType = await db.User_CheckIn_Types.findOne({
           where: { CD: CHECKIN_TYPE_NAME },
@@ -41,7 +41,9 @@ const attendanceServices = {
         if (!Number.isInteger(LOCATION_ID)) {
           throw createError.NotFound("It must be number");
         }
-
+        if (!CHECK_IN) throw createError.NotFound("Status CD `IN` not found ");
+        if (!CHECK_OUT)
+          throw createError.NotFound("Status CD `OUT` not found ");
         //check bảng ghi có tồn tại hay không
         if (isCheck[0] !== undefined) {
           //Kiểm tra đã checkin hay chưa
@@ -84,10 +86,10 @@ const attendanceServices = {
       try {
         //status
         var CHECK_IN = await db.User_Attendance_Statuses.findOne({
-          where: { CD: "CHECK IN" },
+          where: { CD: "IN" },
         });
         var CHECK_OUT = await db.User_Attendance_Statuses.findOne({
-          where: { CD: "CHECK OUT" },
+          where: { CD: "OUT" },
         });
         var idType = await db.User_CheckIn_Types.findOne({
           where: { CD: CHECKIN_TYPE_NAME },
@@ -112,7 +114,9 @@ const attendanceServices = {
         if (!Number.isInteger(LOCATION_ID)) {
           throw createError.NotFound("It must be number");
         }
-
+        if (!CHECK_IN) throw createError.NotFound("Status CD `IN` not found ");
+        if (!CHECK_OUT)
+          throw createError.NotFound("Status CD `OUT` not found ");
         if (isCheck[0] === undefined)
           throw createError.NotFound("You must checkin before checkout");
 
