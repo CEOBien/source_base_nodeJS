@@ -1,0 +1,802 @@
+openapi: 3.0.1
+info:
+  title: NS Checkin REST APIs Document
+  # description: NS Checkin system REST API
+  # termsOfService: http://swagger.io/terms/
+  # contact:
+  #   name: Hyperledger Team
+  # license:
+  #   name: Apache 2.0
+  #   url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://wns.novasquare.vn:8345
+  - url: http://192.168.1.21:8345
+
+paths:
+  /api/auth/login:
+    post:
+      tags:
+        - authorization
+      summary: login
+      operationId: login
+      requestBody:
+        description: login
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/user"
+            example:
+              "USER_NAME": "duy.phan"
+              "USER_PW": "12345678"
+              "remember": true
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+
+  /api/country/getAll:
+    get:
+      tags:
+        - countries
+      summary: get all countries
+      operationId: get all countries
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      # security:
+      #   - JWT: []
+
+  /api/country/createCountry:
+    post:
+      tags:
+        - countries
+      summary: create country
+      operationId: create country
+      requestBody:
+        description: create country
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/country"
+            example:
+              "NAME": "country 1"
+              "DESC": "country 1"
+              "CD": "C001"
+              "NOTE": "NOTE 1"
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/country/getCountry/{countryId}:
+    get:
+      tags:
+        - countries
+      summary: get country details by country ID
+      operationId: get country details by country ID
+      parameters:
+        - name: countryId
+          in: path
+          description: Please provide countryId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/country/updateCountry/{countryId}:
+    patch:
+      tags:
+        - countries
+      summary: update country details by country ID
+      operationId: update country details by country ID
+      parameters:
+        - name: countryId
+          in: path
+          description: Please provide countryId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      requestBody:
+        description: update country
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/country"
+            example:
+              "NAME": "country 2"
+              "DESC": "country 2"
+              "CD": "C002"
+              "NOTE": "NOTE 1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/country/deleteCountry/{countryId}:
+    delete:
+      tags:
+        - countries
+      summary: delete country by country ID
+      operationId: delete country by country ID
+      parameters:
+        - name: countryId
+          in: path
+          description: Please provide countryId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/city/getAll:
+    get:
+      tags:
+        - cities
+      summary: get all cities
+      operationId: get all cities
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/city/createCity:
+    post:
+      tags:
+        - cities
+      summary: create city
+      operationId: create city
+      requestBody:
+        description: create city
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/city"
+            example:
+              "NAME": "city 1"
+              "DESC": "city 1"
+              "CD": "C001"
+              "NOTE": "NOTE 1"
+              "COUNTRY_ID": 1
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/city/getCity/{cityId}:
+    get:
+      tags:
+        - cities
+      summary: get city details by city ID
+      operationId: get city details by city ID
+      parameters:
+        - name: cityId
+          in: path
+          description: Please provide cityId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/city/updateCity/{cityId}:
+    patch:
+      tags:
+        - cities
+      summary: update city details by city ID
+      operationId: update city details by city ID
+      parameters:
+        - name: cityId
+          in: path
+          description: Please provide cityId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      requestBody:
+        description: update city
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/city"
+            example:
+              "NAME": "city 2"
+              "DESC": "city 2"
+              "CD": "C002"
+              "NOTE": "NOTE 1"
+              "COUNTRY_ID": 1
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/city/deleteCity/{cityId}:
+    delete:
+      tags:
+        - cities
+      summary: delete city by city ID
+      operationId: delete city by city ID
+      parameters:
+        - name: cityId
+          in: path
+          description: Please provide cityId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinStatus/getAll:
+    get:
+      tags:
+        - checkin statuses
+      summary: get all checkin statuses
+      operationId: get all checkin statuses
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinStatus/createCheckinStatus:
+    post:
+      tags:
+        - checkin statuses
+      summary: create checkinStatus
+      operationId: create checkinStatus
+      requestBody:
+        description: create checkinStatus
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkinStatus"
+            example:
+              "NAME": "checkinStatus 1"
+              "DESC": "checkinStatus 1"
+              "CD": "C001"
+              "NOTE": "NOTE 1"
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinStatus/getCheckinStatus/{checkinStatusId}:
+    get:
+      tags:
+        - checkin statuses
+      summary: get checkinStatus details by checkinStatus ID
+      operationId: get checkinStatus details by checkinStatus ID
+      parameters:
+        - name: checkinStatusId
+          in: path
+          description: Please provide checkinStatusId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinStatus/updateCheckinStatus/{checkinStatusId}:
+    patch:
+      tags:
+        - checkin statuses
+      summary: update checkinStatus details by checkinStatus ID
+      operationId: update checkinStatus details by checkinStatus ID
+      parameters:
+        - name: checkinStatusId
+          in: path
+          description: Please provide checkinStatusId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      requestBody:
+        description: update checkinStatus
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkinStatus"
+            example:
+              "NAME": "checkinStatus 2"
+              "DESC": "checkinStatus 2"
+              "CD": "C002"
+              "NOTE": "NOTE 1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinStatus/deleteCheckinStatus/{checkinStatusId}:
+    delete:
+      tags:
+        - checkin statuses
+      summary: delete checkinStatus by checkinStatus ID
+      operationId: delete checkinStatus by checkinStatus ID
+      parameters:
+        - name: checkinStatusId
+          in: path
+          description: Please provide checkinStatusId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  #checkin_type
+  /api/checkinType/getAll:
+    get:
+      tags:
+        - checkin type
+      summary: get all checkin type
+      operationId: get all checkin type
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinType/createCheckinType:
+    post:
+      tags:
+        - checkin type
+      summary: create checkintype
+      operationId: create checkintype
+      requestBody:
+        description: create checkintype
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkinType"
+            example:
+              "NAME": "checkinStatus 1"
+              "DESC": "checkinStatus 1"
+              "CD": "C001"
+              "NOTE": "NOTE 1"
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinType/getCheckinType/{checkinTypeId}:
+    get:
+      tags:
+        - checkin type
+      summary: get checkinType details by checkinType ID
+      operationId: get checkinType details by checkinType ID
+      parameters:
+        - name: checkinTypeId
+          in: path
+          description: Please provide checkinTypeId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinType/updateCheckinType/{checkinTypeId}:
+    patch:
+      tags:
+        - checkin type
+      summary: update checkinType details by checkinType ID
+      operationId: update checkinType details by checkinType ID
+      parameters:
+        - name: checkinTypeId
+          in: path
+          description: Please provide checkinTypeId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      requestBody:
+        description: update checkinType
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/checkinType"
+            example:
+              "NAME": "checkinType 2"
+              "CD": "C002"
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  /api/checkinType/deleteCheckinType/{checkinTypeId}:
+    delete:
+      tags:
+        - checkin type
+      summary: delete checkinType by checkinType ID
+      operationId: delete checkinType by checkinType ID
+      parameters:
+        - name: checkinTypeId
+          in: path
+          description: Please provide checkinTypeId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      security:
+        - JWT: []
+
+  #checkin ,check out
+  /api/attendance/checkin:
+    post:
+      tags:
+        - attendance checkin
+      summary: create attendance checkin
+      operationId: create attendance checkin
+      requestBody:
+        description: create attendance checkin
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/attendance"
+            example:
+              "USER_ID": 1
+              "LOCATION_ID": 1
+              "CHECKIN_TYPE_ID": 1
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      # security:
+      #   - JWT: []
+
+  /api/attendance/checkout:
+    post:
+      tags:
+        - attendance checkin
+      summary: create attendance checkout
+      operationId: create attendance checkout
+      requestBody:
+        description: create attendance checkout
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/attendance"
+            example:
+              "USER_ID": 1
+              "LOCATION_ID": 1
+              "CHECKIN_TYPE_ID": 1
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      # security:
+      #   - JWT: []
+
+  /api/attendance/getall:
+    get:
+      tags:
+        - attendance checkin
+      summary: get all attendance
+      operationId: get all attendance
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      # security:
+      #   - JWT: []
+
+  /api/attendance/get/{attendanceId}:
+    get:
+      tags:
+        - attendance checkin
+      summary: get UserId details user ID
+      operationId: get UserId details by user ID
+      parameters:
+        - name: attendanceId
+          in: path
+          description: Please provide userId
+          required: true
+          schema:
+            type: string
+            example: "1"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+      # security:
+      #   - JWT: []
+components:
+  schemas:
+  securitySchemes:
+    JWT:
+      type: apiKey
+      in: header
+      name: Authorization
