@@ -1,8 +1,8 @@
 const statusServices = require("../services/checkInStatusService");
-const http_errors = require("../middlewares/handle_error");
+
 
 const statusController = {
-  addStatus: async (req, res) => {
+  addStatus: async (req, res, next) => {
     try {
       const { NAME, CD } = req.body;
       if (!NAME)
@@ -11,17 +11,15 @@ const statusController = {
       const response = await statusServices.addStatusService(req.body);
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
 
-  updateStatus: async (req, res) => {
+  updateStatus: async (req, res, next) => {
     try {
       const id = req.params.id;
       const { NAME, CD } = req.body;
-      if (!id)
-        return res.status(400).json({ err: 1, mess: "Id not extied" });
+      if (!id) return res.status(400).json({ err: 1, mess: "Id not extied" });
 
       const response = await statusServices.updateStatusService({
         id,
@@ -29,42 +27,36 @@ const statusController = {
       });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
-  getStatusId: async (req, res) => {
+  getStatusId: async (req, res, next) => {
     try {
       const id = req.params.id;
-      if (!id)
-        return res.status(400).json({ err: 1, mess: "Id not extied" });
+      if (!id) return res.status(400).json({ err: 1, mess: "Id not extied" });
       const response = await statusServices.getStatusId({ id });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
-  getAll: async (req, res) => {
+  getAll: async (req, res, next) => {
     try {
       const response = await statusServices.getAllStatus();
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
 
-  deleteStatusId: async (req, res) => {
+  deleteStatusId: async (req, res, next) => {
     try {
       const id = req.params.id;
-      if (!id)
-        return res.status(400).json({ err: 1, mess: "Id not exited" });
+      if (!id) return res.status(400).json({ err: 1, mess: "Id not exited" });
       const response = await statusServices.deleteStatusId({ id });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
 };

@@ -1,5 +1,7 @@
 const db = require("../models");
 const createError = require("http-errors");
+const { Op } = require("sequelize");
+
 const statusServices = {
   addStatusService: async ({ NAME, CD }) => {
     return new Promise(async (resolve, reject) => {

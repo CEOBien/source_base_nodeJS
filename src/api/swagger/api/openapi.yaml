@@ -675,7 +675,7 @@ paths:
         - JWT: []
 
   #checkin ,check out
-  /api/attendance/checkin:
+  /api/attendance/checkIn:
     post:
       tags:
         - attendance checkin
@@ -708,7 +708,7 @@ paths:
       # security:
       #   - JWT: []
 
-  /api/attendance/checkout:
+  /api/attendance/checkOut:
     post:
       tags:
         - attendance checkin
@@ -741,7 +741,7 @@ paths:
       # security:
       #   - JWT: []
 
-  /api/attendance/getall:
+  /api/attendance/getAll:
     get:
       tags:
         - attendance checkin

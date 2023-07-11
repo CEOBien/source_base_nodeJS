@@ -5,7 +5,7 @@ const {
   logTime,
 } = require("../helpers/caculatorTime");
 const moment = require("moment");
-const { Op } = require("sequelize");
+const createError = require("http-errors");
 
 const attendanceServices = {
   checkIn: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_ID }) => {
@@ -32,22 +32,16 @@ const attendanceServices = {
         });
         //validate
         if (!Number.isInteger(LOCATION_ID)) {
-          return resolve({
-            err: 1,
-            mess: "Invalid location_id value, it must be a number",
-          });
+          throw createError.NotFound("It must be number");
         }
         if (!Number.isInteger(CHECKIN_TYPE_ID)) {
-          return resolve({
-            err: 1,
-            mess: "Invalid checkin_type_id value, it must be a number",
-          });
+          throw createError.NotFound("It must be number");
         }
         //check bảng ghi có tồn tại hay không
         if (isCheck[0] !== undefined) {
           //Kiểm tra đã checkin hay chưa
           if (isCheck[0].CHECKIN_STATUS_ID === CHECK_IN)
-            return resolve({ err: 1, mess: "You have checkin" });
+            throw createError.NotFound("You have checkin");
         }
         //Kiểm tra nếu rỗng hoặc đã check out thì cho tạo bảng ghi
         if (
@@ -104,16 +98,10 @@ const attendanceServices = {
         });
         console.log(isCheck);
         if (!Number.isInteger(LOCATION_ID)) {
-          return resolve({
-            err: 1,
-            mess: "Invalid location_id value, it must be a number",
-          });
+          throw createError.NotFound("It must be number");
         }
         if (!Number.isInteger(CHECKIN_TYPE_ID)) {
-          return resolve({
-            err: 1,
-            mess: "Invalid checkin_type_id value, it must be a number",
-          });
+          throw createError.NotFound("It must be number");
         }
 
         if (isCheck[0] === undefined)
@@ -199,16 +187,6 @@ const attendanceServices = {
                  WHEN HOUR(CHECK_OUT_TIME) BETWEEN 17 AND 23 AND MINUTE(CHECK_OUT_TIME) BETWEEN 30 AND 59 THEN 'ONTIME' ELSE 'SOON' END`
               ),
               "CHECK_OUT_STATUS",
-            ],
-            [
-              db.sequelize.literal(
-                `CASE
-                 WHEN TIMESTAMPDIFF(HOUR, CHECK_IN_TIME, CHECK_OUT_TIME) = 8 THEN 'OK'
-                 WHEN TIMESTAMPDIFF(HOUR, CHECK_IN_TIME, CHECK_OUT_TIME) < 8 THEN 'NOT OK'
-                 WHEN TIMESTAMPDIFF(HOUR, CHECK_IN_TIME, CHECK_OUT_TIME) > 8 THEN 'GREAT'
-                 END`
-              ),
-              "TOTAL_LOGTIME",
             ],
           ],
           order: [["USER_ID", "ASC"]],

@@ -2,7 +2,7 @@ const checkinTypeServices = require("../services/checkInTypeService");
 const http_errors = require("../middlewares/handle_error");
 
 const statusController = {
-  addCheckInType: async (req, res) => {
+  addCheckInType: async (req, res, next) => {
     try {
       const { NAME, CD } = req.body;
       if (!NAME)
@@ -13,17 +13,15 @@ const statusController = {
       );
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
 
-  updateCheckInType: async (req, res) => {
+  updateCheckInType: async (req, res, next) => {
     try {
       const id = req.params.id;
       const { NAME, CD } = req.body;
-      if (!id)
-        return res.status(400).json({ err: 1, mess: "Id not extied" });
+      if (!id) return res.status(400).json({ err: 1, mess: "Id not extied" });
 
       const response = await checkinTypeServices.updateCheckInTypeService({
         id,
@@ -31,42 +29,36 @@ const statusController = {
       });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
-  getCheckInTypeId: async (req, res) => {
+  getCheckInTypeId: async (req, res, next) => {
     try {
       const id = req.params.id;
-      if (!id)
-        return res.status(400).json({ err: 1, mess: "Id not extied" });
+      if (!id) return res.status(400).json({ err: 1, mess: "Id not extied" });
       const response = await checkinTypeServices.getCheckInTypeId({ id });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
-  getAll: async (req, res) => {
+  getAll: async (req, res, next) => {
     try {
       const response = await checkinTypeServices.getAllCheckInType();
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
 
-  deleteCheckInTypeId: async (req, res) => {
+  deleteCheckInTypeId: async (req, res, next) => {
     try {
       const id = req.params.id;
-      if (!id)
-        return res.status(400).json({ err: 1, mess: "Id not extied" });
+      if (!id) return res.status(400).json({ err: 1, mess: "Id not extied" });
       const response = await checkinTypeServices.deleteCheckInTypeId({ id });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
 };
