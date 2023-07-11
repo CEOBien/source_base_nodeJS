@@ -7,7 +7,7 @@ const statusServices = {
     return new Promise(async (resolve, reject) => {
       try {
         //check if the code is existed or not
-        const exist = await db.CheckInStatus.findOne({
+        const exist = await db.User_Attendance_Statuses.findOne({
           where: {
             CD: CD,
             IS_DELETED: false,
@@ -17,7 +17,7 @@ const statusServices = {
           throw createError.NotFound("Checkin_Status CD already exists");
         }
 
-        const add = await db.CheckInStatus.create({
+        const add = await db.User_Attendance_Statuses.create({
           NAME: NAME,
           CD,
         });
@@ -38,7 +38,7 @@ const statusServices = {
     return new Promise(async (resolve, reject) => {
       try {
         //check if the code is existed or not
-        const exist = await db.CheckInStatus.findOne({
+        const exist = await db.User_Attendance_Statuses.findOne({
           where: {
             CD: {
               [Op.like]: CD,
@@ -49,7 +49,7 @@ const statusServices = {
         if (exist && exist.id != id) {
           throw createError.NotFound("Checkin_Status CD already exists");
         }
-        const update = await db.CheckInStatus.update(
+        const update = await db.User_Attendance_Statuses.update(
           {
             NAME: NAME,
             CD,
@@ -76,7 +76,7 @@ const statusServices = {
   getStatusId: async ({ id }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const getId = await db.CheckInStatus.findOne({
+        const getId = await db.User_Attendance_Statuses.findOne({
           where: {
             id: id,
           },
@@ -97,7 +97,7 @@ const statusServices = {
   getAllStatus: async () => {
     return new Promise(async (resolve, reject) => {
       try {
-        const getAllstatus = await db.CheckInStatus.findAll();
+        const getAllstatus = await db.User_Attendance_Statuses.findAll();
         resolve({
           err: getAllstatus ? 0 : 1,
           mess: getAllstatus ? "Get list successfully" : "Error while get list",
@@ -112,7 +112,7 @@ const statusServices = {
   deleteStatusId: async ({ id }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const deleteStatus = await db.CheckInStatus.destroy({
+        const deleteStatus = await db.User_Attendance_Statuses.destroy({
           where: { id: id },
         });
         resolve({
