@@ -1,12 +1,12 @@
 const db = require("../models");
 const { Op } = require("sequelize");
-const createError = require("http-errors")
+const createError = require("http-errors");
 const CheckInTypeServices = {
   addCheckInType: async ({ NAME, CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
         //check if the code is existed or not
-        const exist = await db.CheckInStatus.findOne({
+        const exist = await db.User_CheckIn_Types.findOne({
           where: {
             CD: CD,
             IS_DELETED: false,
@@ -16,7 +16,7 @@ const CheckInTypeServices = {
           throw createError.NotFound("Checkin_Type CD already exists");
         }
 
-        const add = await db.CheckInType.create({
+        const add = await db.User_CheckIn_Types.create({
           NAME: NAME,
           CD,
         });
@@ -37,7 +37,7 @@ const CheckInTypeServices = {
     return new Promise(async (resolve, reject) => {
       try {
         //check if the code is existed or not
-        const exist = await db.CheckInType.findOne({
+        const exist = await db.User_CheckIn_Types.findOne({
           where: {
             CD: {
               [Op.like]: CD,
@@ -48,7 +48,7 @@ const CheckInTypeServices = {
         if (exist && exist.id != id) {
           throw createError.NotFound("Checkin_Type CD already exists");
         }
-        const update = await db.CheckInType.update(
+        const update = await db.User_CheckIn_Types.update(
           {
             NAME: NAME,
             CD,
@@ -75,7 +75,7 @@ const CheckInTypeServices = {
   getCheckInTypeId: async ({ id }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const getId = await db.CheckInType.findOne({
+        const getId = await db.User_CheckIn_Types.findOne({
           where: {
             id: id,
           },
@@ -96,7 +96,7 @@ const CheckInTypeServices = {
   getAllCheckInType: async () => {
     return new Promise(async (resolve, reject) => {
       try {
-        const getAll = await db.CheckInType.findAll();
+        const getAll = await db.User_CheckIn_Types.findAll();
         resolve({
           err: getAll ? 0 : 1,
           mess: getAll ? "Get list successfully" : "Error while get list",
@@ -111,7 +111,7 @@ const CheckInTypeServices = {
   deleteCheckInTypeId: async ({ id }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const deleteType = await db.CheckInType.destroy({
+        const deleteType = await db.User_CheckIn_Types.destroy({
           where: { id: id },
         });
         resolve({

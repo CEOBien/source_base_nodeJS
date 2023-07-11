@@ -10,9 +10,9 @@ info:
   #   url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-  - url: https://wns.novasquare.vn:8345
+  - url: http://wns.novasquare.vn:6345
   - url: http://192.168.1.21:8345
-  - url: http://localhost:8345
+  - url: http://localhost:6345
 
 paths:
   # /api/auth/login:
@@ -332,34 +332,34 @@ paths:
   #       - JWT: []
 
   # /api/city/deleteCity/{cityId}:
-  #   delete:
-  #     tags:
-  #       - cities
-  #     summary: delete city by city ID
-  #     operationId: delete city by city ID
-  #     parameters:
-  #       - name: cityId
-  #         in: path
-  #         description: Please provide cityId
-  #         required: true
-  #         schema:
-  #           type: string
-  #           example: "1"
-  #     responses:
-  #       "200":
-  #         description: Success
-  #         content: {}
-  #       "400":
-  #         description: Bad Request
-  #         content: {}
-  #       "401":
-  #         description: UnAuthorized
-  #         content: {}
-  #       "404":
-  #         description: Not found
-  #         content: {}
-  #     security:
-  #       - JWT: []
+    # delete:
+    #   tags:
+    #     - cities
+    #   summary: delete city by city ID
+    #   operationId: delete city by city ID
+    #   parameters:
+    #     - name: cityId
+    #       in: path
+    #       description: Please provide cityId
+    #       required: true
+    #       schema:
+    #         type: string
+    #         example: "1"
+    #   responses:
+    #     "200":
+    #       description: Success
+    #       content: {}
+    #     "400":
+    #       description: Bad Request
+    #       content: {}
+    #     "401":
+    #       description: UnAuthorized
+    #       content: {}
+    #     "404":
+    #       description: Not found
+    #       content: {}
+    #   security:
+    #     - JWT: []
 
   /api/checkinStatus/getAll:
     get:
@@ -396,10 +396,9 @@ paths:
             schema:
               $ref: "#/components/schemas/checkinStatus"
             example:
-              "NAME": "checkinStatus 1"
-              "DESC": "checkinStatus 1"
-              "CD": "C001"
-              "NOTE": "NOTE 1"
+              "NAME": "CHECK IN"
+
+              "CD": "CHECK IN"
 
       responses:
         "200":
@@ -468,10 +467,8 @@ paths:
             schema:
               $ref: "#/components/schemas/checkinStatus"
             example:
-              "NAME": "checkinStatus 2"
-              "DESC": "checkinStatus 2"
-              "CD": "C002"
-              "NOTE": "NOTE 1"
+              "NAME": "CHECK IN"
+              "CD": "CHECK IN"
       responses:
         "200":
           description: Success
@@ -554,10 +551,8 @@ paths:
             schema:
               $ref: "#/components/schemas/checkinType"
             example:
-              "NAME": "checkinStatus 1"
-              "DESC": "checkinStatus 1"
-              "CD": "C001"
-              "NOTE": "NOTE 1"
+              "NAME": "WEB"
+              "CD": "WEB"
 
       responses:
         "200":
@@ -626,8 +621,8 @@ paths:
             schema:
               $ref: "#/components/schemas/checkinType"
             example:
-              "NAME": "checkinType 2"
-              "CD": "C002"
+              "NAME": "WEB"
+              "CD": "WEB"
 
       responses:
         "200":
@@ -691,7 +686,7 @@ paths:
             example:
               "USER_ID": 1
               "LOCATION_ID": 1
-              "CHECKIN_TYPE_ID": 1
+              "CHECKIN_TYPE_NAME": "QR"
 
       responses:
         "200":
@@ -724,7 +719,7 @@ paths:
             example:
               "USER_ID": 1
               "LOCATION_ID": 1
-              "CHECKIN_TYPE_ID": 1
+              "CHECKIN_TYPE_NAME": "QR"
 
       responses:
         "200":

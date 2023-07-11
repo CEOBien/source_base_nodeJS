@@ -4,7 +4,7 @@ const http_errors = require("../middlewares/handle_error");
 const attendanceController = {
   Checkin: async (req, res, next) => {
     try {
-      const { LOCATION_ID, USER_ID, CHECKIN_TYPE_ID } = req.body;
+      const { LOCATION_ID, USER_ID, CHECKIN_TYPE_NAME } = req.body;
 
       if (!LOCATION_ID)
         return res
@@ -13,7 +13,7 @@ const attendanceController = {
       if (!USER_ID) {
         return res.status(400).json({ err: 1, mess: "User not exited" });
       }
-      if (!CHECKIN_TYPE_ID) {
+      if (!CHECKIN_TYPE_NAME) {
         return res
           .status(400)
           .json({ err: 1, mess: "Checkin_Type_Id must not be empty" });
@@ -23,14 +23,13 @@ const attendanceController = {
       return res.status(200).json(response);
     } catch (error) {
       console.log(error);
-      next(error)
+      next(error);
     }
   },
 
   Checkout: async (req, res, next) => {
     try {
-      const { LOCATION_ID, USER_ID, CHECKIN_TYPE_ID } = req.body;
-      console.log(CHECKIN_TYPE_ID, LOCATION_ID);
+      const { LOCATION_ID, USER_ID, CHECKIN_TYPE_NAME } = req.body;
       if (!LOCATION_ID)
         return res
           .status(400)
@@ -38,7 +37,7 @@ const attendanceController = {
       if (!USER_ID) {
         return res.status(400).json({ err: 1, mess: "User not exited" });
       }
-      if (!CHECKIN_TYPE_ID) {
+      if (!CHECKIN_TYPE_NAME) {
         return res.status(400).json({ err: 1, mess: "Type must not be empty" });
       }
 
@@ -46,7 +45,7 @@ const attendanceController = {
       return res.status(200).json(responsive);
     } catch (error) {
       console.log(error);
-      next(error)
+      next(error);
     }
   },
   getAllByQuery: async (req, res) => {
