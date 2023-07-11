@@ -1,7 +1,8 @@
 const db = require("../models");
 const { Op } = require("sequelize");
+const createError = require("http-errors")
 const CheckInTypeServices = {
-  addCheckInTypeService: async ({ NAME, CD }) => {
+  addCheckInType: async ({ NAME, CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
         //check if the code is existed or not

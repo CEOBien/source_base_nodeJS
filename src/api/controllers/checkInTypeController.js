@@ -8,7 +8,7 @@ const statusController = {
       if (!NAME)
         return res.status(400).json({ err: 1, mess: "Name must not be empty" });
 
-      const response = await checkinTypeServices.addCheckInTypeService(
+      const response = await checkinTypeServices.addCheckInType(
         req.body
       );
       return res.status(200).json(response);

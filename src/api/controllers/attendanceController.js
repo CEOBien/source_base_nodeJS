@@ -2,7 +2,7 @@ const attendanceServices = require("../services/attendanceService");
 const http_errors = require("../middlewares/handle_error");
 
 const attendanceController = {
-  Checkin: async (req, res) => {
+  Checkin: async (req, res, next) => {
     try {
       const { LOCATION_ID, USER_ID, CHECKIN_TYPE_ID } = req.body;
 
@@ -23,11 +23,11 @@ const attendanceController = {
       return res.status(200).json(response);
     } catch (error) {
       console.log(error);
-      http_errors.internalServerError(res);
+      next(error)
     }
   },
 
-  Checkout: async (req, res) => {
+  Checkout: async (req, res, next) => {
     try {
       const { LOCATION_ID, USER_ID, CHECKIN_TYPE_ID } = req.body;
       console.log(CHECKIN_TYPE_ID, LOCATION_ID);
@@ -46,7 +46,7 @@ const attendanceController = {
       return res.status(200).json(responsive);
     } catch (error) {
       console.log(error);
-      http_errors.internalServerError(res);
+      next(error)
     }
   },
   getAllByQuery: async (req, res) => {
