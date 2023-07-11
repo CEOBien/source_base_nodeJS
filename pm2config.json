@@ -1,6 +1,10 @@
 {
   "name": "NS_CHECKIN_CD",
+<<<<<<< HEAD
   "script": "dist/ns_checkin",
+=======
+  "script": "dist/ns_checkin.exe",
+>>>>>>> 940cfa322083c1553083e112954f2c7a261e60d3
   "watch": true,
   "ignore_watch": [
     "node_modules",
