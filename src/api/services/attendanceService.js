@@ -288,6 +288,7 @@ const attendanceServices = {
         const total = caculatorWorkingTime(checkin_time, checkout_time);
         resolve({
           USER_ID: USER_ID,
+          FULL_NAME:"Trương Quốc Tuấn",
           FROM_DATE: FROM_DATE,
           TO_DATE: TO_DATE,
           HOUR: total,

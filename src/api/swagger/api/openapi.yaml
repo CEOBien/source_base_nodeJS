@@ -789,6 +789,43 @@ paths:
           content: {}
       # security:
       #   - JWT: []
+  /api/attendance/getWorkingHour:
+    get:
+      tags:
+        - attendance checkin
+      summary: get working hour
+      operationId: get  working hour
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                USER_ID:
+                  type: integer
+                  example: 142
+                FROM_DATE:
+                  type: string
+                  format: date
+                  example: "2023-07-10"
+                TO_DATE:
+                  type: string
+                  format: date
+                  example: "2023-07-10"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
 components:
   schemas:
   securitySchemes:
