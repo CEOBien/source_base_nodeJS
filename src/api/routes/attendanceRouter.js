@@ -6,5 +6,6 @@ router.post("/checkOut", attendanceController.Checkout);
 router.get("/getAll", attendanceController.getAllByQuery);
 router.get("/get/:id", attendanceController.getUserId);
 router.delete("/delete/:id", attendanceController.deleteAttendance);
+router.get("/getWorkingHour", attendanceController.getWorkingHour);
 
 module.exports = router;
