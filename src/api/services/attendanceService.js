@@ -1,14 +1,10 @@
 const db = require("../models");
-const {
-  checkin_status,
-  checkout_status,
-  logTime,
-} = require("../helpers/caculatorTime");
+const caculatorWorkingTime = require("../helpers/caculatorTime");
 const moment = require("moment");
 const createError = require("http-errors");
 
 const attendanceServices = {
-  checkIn: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_NAME }) => {
+  checkIn: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
         //trạng thái checkin checkout
@@ -19,7 +15,7 @@ const attendanceServices = {
           where: { CD: "OUT" },
         });
         var idType = await db.User_CheckIn_Types.findOne({
-          where: { CD: CHECKIN_TYPE_NAME },
+          where: { CD: CHECKIN_TYPE_CD },
         });
         //lấy giờ hiện tại
         const currentTime = new Date();
@@ -81,7 +77,7 @@ const attendanceServices = {
       }
     });
   },
-  checkOut: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_NAME }) => {
+  checkOut: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
         //status
@@ -92,7 +88,7 @@ const attendanceServices = {
           where: { CD: "OUT" },
         });
         var idType = await db.User_CheckIn_Types.findOne({
-          where: { CD: CHECKIN_TYPE_NAME },
+          where: { CD: CHECKIN_TYPE_CD },
         });
         //lấy giờ
         var currentTime = new Date();
@@ -110,7 +106,7 @@ const attendanceServices = {
           order: [["CREATED_DATE", "DESC"]],
           raw: true,
         });
-        console.log(isCheck);
+
         if (!Number.isInteger(LOCATION_ID)) {
           throw createError.NotFound("It must be number");
         }
@@ -175,7 +171,6 @@ const attendanceServices = {
         const getAll = await db.User_Attendances.findAndCountAll({
           include,
           where,
-          limit: 10,
           attributes: [
             "USER_ID",
             "CHECK_IN_TIME",
@@ -246,6 +241,56 @@ const attendanceServices = {
           mess: deleteAttendance
             ? "delete record successfully"
             : "Error while delete",
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  getWorkingHours: async ({ USER_ID, FROM_DATE, TO_DATE }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const moment = require("moment");
+
+        // Tạo đối tượng Moment cho ngày bắt đầu và kết thúc
+        const fromDate = moment(FROM_DATE);
+        const toDate = moment(TO_DATE);
+        const CHECK_IN = await db.User_Attendances.findOne({
+          where: {
+            USER_ID: USER_ID,
+            CHECK_IN_TIME: {
+              [db.Sequelize.Op.between]: [
+                fromDate.format("YYYY-MM-DD 00:00:00"),
+                toDate.format("YYYY-MM-DD 23:59:59"),
+              ],
+            },
+          },
+          order: [["CHECK_IN_TIME", "ASC"]],
+          raw: true,
+        });
+
+        const CHECK_OUT = await db.User_Attendances.findOne({
+          wehre: {
+            USER_ID: USER_ID,
+            CHECK_OUT_TIME: {
+              [db.Sequelize.Op.between]: [
+                fromDate.format("YYYY-MM-DD 00:00:00"),
+                toDate.format("YYYY-MM-DD 23:59:59"),
+              ],
+            },
+          },
+          order: [["CHECK_OUT_TIME", "DESC"]],
+          raw: true,
+        });
+        const checkin_time = CHECK_IN.CHECK_IN_TIME;
+        const checkout_time = CHECK_OUT.CHECK_OUT_TIME;
+        const total = caculatorWorkingTime(checkin_time, checkout_time);
+        resolve({
+          USER_ID: USER_ID,
+          FROM_DATE: FROM_DATE,
+          TO_DATE: TO_DATE,
+          HOUR: total,
         });
       } catch (error) {
         reject(error);
