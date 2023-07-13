@@ -30,6 +30,10 @@ module.exports = {
       //   type: Sequelize.INTEGER,
       //   allowNull: false,
       // },
+      CD: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       CREATED_DATE: {
         type: Sequelize.DATE,
         allowNull: true,

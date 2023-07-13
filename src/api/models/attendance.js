@@ -29,6 +29,10 @@ module.exports = (sequelize, DataTypes) => {
       LOCATION_ID: DataTypes.INTEGER,
       // CHECKIN_STATUS_ID: DataTypes.INTEGER,
       // CHECKIN_TYPE_ID: DataTypes.INTEGER,
+      CD: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       CREATED_DATE: DataTypes.DATE,
       CREATED_BY: DataTypes.INTEGER,
       MODIFIED_DATE: DataTypes.DATE,
