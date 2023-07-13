@@ -1,6 +1,6 @@
 const attendanceServices = require("../services/attendanceService");
 const http_errors = require("../middlewares/handle_error");
-
+const isValidDate = require("../helpers/validateDay");
 const attendanceController = {
   Checkin: async (req, res, next) => {
     try {
@@ -80,7 +80,14 @@ const attendanceController = {
   },
   getWorkingHour: async (req, res, next) => {
     try {
-      const response = await attendanceServices.getWorkingHours(req.body);
+      const { USER_ID, FROM_DATE, TO_DATE } = req.params;
+
+      if (!USER_ID || !FROM_DATE || !TO_DATE)
+        return res.status(400).json("Require all field must not be empty");
+      if (!isValidDate(FROM_DATE) || !isValidDate(TO_DATE))
+        return res.status(400).json("Date is not in the correct format");
+
+      const response = await attendanceServices.getWorkingHours(req.params);
       return res.status(200).json(response);
     } catch (error) {
       next(error);
@@ -88,10 +95,12 @@ const attendanceController = {
   },
   countuserCheckInByDate: async (req, res, next) => {
     try {
-      const { DATE } = req.body;
+      const DATE = req.params.DATE;
       if (!DATE) return res.status(400).json("DATE must not be empty!");
+      if (!isValidDate(DATE))
+        return res.status(400).json("DATE is not in the correct format");
       const response = await attendanceServices.countUserCheckedInByDate(
-        req.body
+        req.params
       );
       return res.status(200).json(response);
     } catch (error) {
@@ -100,10 +109,12 @@ const attendanceController = {
   },
   countuserCheckOutByDate: async (req, res, next) => {
     try {
-      const { DATE } = req.body;
+      const DATE = req.params.DATE;
       if (!DATE) return res.status(400).json("DATE must not be empty!");
+      if (!isValidDate(DATE))
+        return res.status(400).json("DATE is not in the correct format");
       const response = await attendanceServices.countUserCheckedOutByDate(
-        req.body
+        req.params
       );
       return res.status(200).json(response);
     } catch (error) {
