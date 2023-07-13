@@ -289,7 +289,6 @@ const attendanceServices = {
         if (!CHECK_OUT) throw createError.NotFound("CHECK_OUT not found ");
         const checkin_time = CHECK_IN.CHECK_IN_TIME;
         const checkout_time = CHECK_OUT.CHECK_OUT_TIME;
-        console.log(CHECK_OUT);
         const total = caculatorWorkingTime({ checkin_time, checkout_time });
         resolve({
           USER_ID: USER_ID,
@@ -333,6 +332,7 @@ const attendanceServices = {
   countUserCheckedOutByDate: async ({ DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
+        
         const momentDate = moment(DATE).startOf("day");
         const startOfDay = momentDate
           .startOf("day")
