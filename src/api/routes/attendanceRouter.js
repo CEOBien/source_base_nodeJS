@@ -6,13 +6,16 @@ router.post("/checkOut", attendanceController.Checkout);
 router.get("/getAll", attendanceController.getAllByQuery);
 router.get("/get/:id", attendanceController.getUserId);
 router.delete("/delete/:id", attendanceController.deleteAttendance);
-router.get("/getWorkingHour", attendanceController.getWorkingHour);
 router.get(
-  "/countUserCheckInByDate",
+  "/getWorkingHour/:USER_ID/:FROM_DATE/:TO_DATE",
+  attendanceController.getWorkingHour
+);
+router.get(
+  "/countUserCheckInByDate/:DATE",
   attendanceController.countuserCheckInByDate
 );
 router.get(
-  "/countUserCheckOutByDate",
+  "/countUserCheckOutByDate/:DATE",
   attendanceController.countuserCheckOutByDate
 );
 

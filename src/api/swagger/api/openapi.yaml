@@ -11,7 +11,7 @@ info:
   version: 1.0.0
 servers:
   - url: http://wns.novasquare.vn:6345
-  - url: http://192.168.1.21:8345
+  - url: http://192.168.1.25:8345
   - url: http://localhost:8345
 
 paths:
@@ -789,7 +789,103 @@ paths:
           content: {}
       # security:
       #   - JWT: []
+  /api/attendance/getWorkingHour/{USER_ID}/{FROM_DATE}/{TO_DATE}:
+    get:
+      tags:
+        - attendance checkin
+      summary: Get working hours for a user within a date range
+      operationId: getWorkingHour
+      parameters:
+        - name: USER_ID
+          in: path
+          description: Please provide USER_ID
+          required: true
+          schema:
+            type: string
+            example: "142"
+        - name: FROM_DATE
+          in: path
+          description: The start date of the date range (in YYYY-MM-DD format)
+          required: true
+          schema:
+            type: string
+            example: "2023-07-10"
+        - name: TO_DATE
+          in: path
+          description: The end date of the date range (in YYYY-MM-DD format)
+          required: true
+          schema:
+            type: string
+            example: "2023-07-10"
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+  /api/attendance/countUserCheckInByDate/{DATE}:
+    get:
+      tags:
+        - attendance checkin
+      summary: Get countUserCheckInByDate
+      operationId: countUserCheckInByDate
+      parameters:
+        - name: DATE
+          in: path
+          description: Please provide countUserCheckInByDate
+          required: true
+          schema:
+            type: string
+            example: "2023-07-10"
 
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
+  /api/attendance/countUserCheckOutByDate/{DATE}:
+    get:
+      tags:
+        - attendance checkin
+      summary: Get countUserCheckOutByDate
+      operationId: countUserCheckOutByDate
+      parameters:
+        - name: DATE
+          in: path
+          description: Please provide countUserCheckOutByDate
+          required: true
+          schema:
+            type: string
+            example: "2023-07-10"
+
+      responses:
+        "200":
+          description: Success
+          content: {}
+        "400":
+          description: Bad Request
+          content: {}
+        "401":
+          description: UnAuthorized
+          content: {}
+        "404":
+          description: Not found
+          content: {}
 components:
   schemas:
   securitySchemes:

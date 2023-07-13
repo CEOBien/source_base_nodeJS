@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
       // CHECKIN_TYPE_ID: DataTypes.INTEGER,
       CD: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       CREATED_DATE: DataTypes.DATE,
       CREATED_BY: DataTypes.INTEGER,
