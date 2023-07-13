@@ -86,5 +86,29 @@ const attendanceController = {
       next(error);
     }
   },
+  countuserCheckInByDate: async (req, res, next) => {
+    try {
+      const { DATE } = req.body;
+      if (!DATE) return res.status(400).json("DATE must not be empty!");
+      const response = await attendanceServices.countUserCheckedInByDate(
+        req.body
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  countuserCheckOutByDate: async (req, res, next) => {
+    try {
+      const { DATE } = req.body;
+      if (!DATE) return res.status(400).json("DATE must not be empty!");
+      const response = await attendanceServices.countUserCheckedOutByDate(
+        req.body
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 module.exports = attendanceController;
