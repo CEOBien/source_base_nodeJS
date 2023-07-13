@@ -1,14 +1,11 @@
 const db = require("../models");
-const {
-  checkin_status,
-  checkout_status,
-  logTime,
-} = require("../helpers/caculatorTime");
+const caculatorWorkingTime = require("../helpers/caculatorTime");
 const moment = require("moment");
 const createError = require("http-errors");
-
+const { Op } = require("sequelize");
+require("dotenv").config();
 const attendanceServices = {
-  checkIn: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_NAME }) => {
+  checkIn: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
         //trạng thái checkin checkout
@@ -19,7 +16,7 @@ const attendanceServices = {
           where: { CD: "OUT" },
         });
         var idType = await db.User_CheckIn_Types.findOne({
-          where: { CD: CHECKIN_TYPE_NAME },
+          where: { CD: CHECKIN_TYPE_CD },
         });
         //lấy giờ hiện tại
         const currentTime = new Date();
@@ -70,8 +67,8 @@ const attendanceServices = {
             mess: attendance ? "Checkin successfully" : "Error while checkin",
             attendance,
             links: {
-              checkout: "http://localhost:9999/api/v1/attendance/checkout",
-              getAll: "http://localhost:10101/api/attendance/getall",
+              checkout: `${process.env.HYBER_LINK}/api/v1/attendance/checkOut`,
+              getAll: `${process.env.HYBER_LINK}/api/attendance/getAll`,
             },
           });
         }
@@ -81,7 +78,7 @@ const attendanceServices = {
       }
     });
   },
-  checkOut: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_NAME }) => {
+  checkOut: async ({ USER_ID, LOCATION_ID, CHECKOUT_TYPE_CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
         //status
@@ -92,7 +89,7 @@ const attendanceServices = {
           where: { CD: "OUT" },
         });
         var idType = await db.User_CheckIn_Types.findOne({
-          where: { CD: CHECKIN_TYPE_NAME },
+          where: { CD: CHECKOUT_TYPE_CD },
         });
         //lấy giờ
         var currentTime = new Date();
@@ -110,7 +107,7 @@ const attendanceServices = {
           order: [["CREATED_DATE", "DESC"]],
           raw: true,
         });
-        console.log(isCheck);
+
         if (!Number.isInteger(LOCATION_ID)) {
           throw createError.NotFound("It must be number");
         }
@@ -138,8 +135,8 @@ const attendanceServices = {
             mess: attendance ? "Checkout successfully" : "Error while checkout",
             attendance,
             links: {
-              checkin: "http://localhost:9999/api/v1/attendance/checkin",
-              getAll: "http://localhost:9999/api/attendance/getall",
+              checkIn: `${process.env.HYBER_LINK}/api/v1/attendance/checkIn`,
+              getAll: `${process.env.HYBER_LINK}/api/attendance/getAll`,
             },
           });
         }
@@ -175,7 +172,6 @@ const attendanceServices = {
         const getAll = await db.User_Attendances.findAndCountAll({
           include,
           where,
-          limit: 10,
           attributes: [
             "USER_ID",
             "CHECK_IN_TIME",
@@ -207,8 +203,8 @@ const attendanceServices = {
           mess: "Get list successfully",
           getAll,
           links: {
-            checkin: "http://localhost:9999/api/v1/attendance/checkin",
-            checkout: "http://localhost:9999/api/v1/attendance/checkout",
+            checkIn: `${process.env.HYBER_LINK}/api/v1/attendance/checkIn`,
+            checkOut: `${process.env.HYBER_LINK}/api/v1/attendance/checkOut`,
           },
         });
       } catch (error) {
@@ -246,6 +242,114 @@ const attendanceServices = {
           mess: deleteAttendance
             ? "delete record successfully"
             : "Error while delete",
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  getWorkingHours: async ({ USER_ID, FROM_DATE, TO_DATE }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const moment = require("moment");
+
+        // Tạo đối tượng Moment cho ngày bắt đầu và kết thúc
+        const fromDate = moment(FROM_DATE);
+        const toDate = moment(TO_DATE);
+        const CHECK_IN = await db.User_Attendances.findOne({
+          where: {
+            USER_ID: USER_ID,
+            CHECK_IN_TIME: {
+              [db.Sequelize.Op.between]: [
+                fromDate.format("YYYY-MM-DD 00:00:00"),
+                toDate.format("YYYY-MM-DD 23:59:59"),
+              ],
+            },
+          },
+          order: [["CREATED_DATE", "ASC"]],
+          raw: true,
+        });
+        if (!CHECK_IN) throw createError.NotFound("CHECK_IN not found ");
+
+        const CHECK_OUT = await db.User_Attendances.findOne({
+          where: {
+            USER_ID: USER_ID,
+            CHECK_OUT_TIME: {
+              [db.Sequelize.Op.between]: [
+                fromDate.format("YYYY-MM-DD 00:00:00"),
+                toDate.format("YYYY-MM-DD 23:59:59"),
+              ],
+            },
+          },
+          order: [[db.Sequelize.literal("CREATED_DATE"), "DESC"]],
+          raw: true,
+        });
+
+        if (!CHECK_OUT) throw createError.NotFound("CHECK_OUT not found ");
+        const checkin_time = CHECK_IN.CHECK_IN_TIME;
+        const checkout_time = CHECK_OUT.CHECK_OUT_TIME;
+        const total = caculatorWorkingTime({ checkin_time, checkout_time });
+        resolve({
+          USER_ID: USER_ID,
+          FULL_NAME: "Trương Quốc Tuấn",
+          FROM_DATE: FROM_DATE,
+          TO_DATE: TO_DATE,
+          HOUR: total,
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+
+  countUserCheckedInByDate: async ({ DATE }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const momentDate = moment(DATE).startOf("day");
+        const startOfDay = momentDate
+          .startOf("day")
+          .format("YYYY-MM-DD HH:mm:ss");
+        const endOfDay = momentDate.endOf("day").format("YYYY-MM-DD HH:mm:ss");
+        const countUserCheckin = await db.User_Attendances.count({
+          where: {
+            CREATED_DATE: { [Op.between]: [startOfDay, endOfDay] },
+            CHECK_IN_TIME: { [Op.not]: null },
+          },
+        });
+        resolve({
+          err: countUserCheckin ? 0 : 1,
+          mess: countUserCheckin
+            ? "List of users who have checked in"
+            : "get user checked in not found",
+          countUserCheckedIn: countUserCheckin,
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+  countUserCheckedOutByDate: async ({ DATE }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        
+        const momentDate = moment(DATE).startOf("day");
+        const startOfDay = momentDate
+          .startOf("day")
+          .format("YYYY-MM-DD HH:mm:ss");
+        const endOfDay = momentDate.endOf("day").format("YYYY-MM-DD HH:mm:ss");
+        const countUserCheckOut = await db.User_Attendances.count({
+          where: {
+            CREATED_DATE: { [Op.between]: [startOfDay, endOfDay] },
+            CHECK_OUT_TIME: { [Op.not]: null },
+          },
+        });
+        resolve({
+          err: countUserCheckOut ? 0 : 1,
+          mess: countUserCheckOut
+            ? "List of users who have checked out"
+            : "get user checked out not found",
+          countUserCheckedOut: countUserCheckOut,
         });
       } catch (error) {
         reject(error);

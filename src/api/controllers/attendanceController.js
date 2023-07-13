@@ -1,10 +1,10 @@
 const attendanceServices = require("../services/attendanceService");
 const http_errors = require("../middlewares/handle_error");
-
+const isValidDate = require("../helpers/validateDay");
 const attendanceController = {
   Checkin: async (req, res, next) => {
     try {
-      const { LOCATION_ID, USER_ID, CHECKIN_TYPE_NAME } = req.body;
+      const { LOCATION_ID, USER_ID, CHECKIN_TYPE_CD } = req.body;
 
       if (!LOCATION_ID)
         return res
@@ -13,23 +13,22 @@ const attendanceController = {
       if (!USER_ID) {
         return res.status(400).json({ err: 1, mess: "User not exited" });
       }
-      if (!CHECKIN_TYPE_NAME) {
+      if (!CHECKIN_TYPE_CD) {
         return res
           .status(400)
-          .json({ err: 1, mess: "Checkin_Type_Id must not be empty" });
+          .json({ err: 1, mess: "Checkin_Type_cd must not be empty" });
       }
 
       const response = await attendanceServices.checkIn(req.body);
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
       next(error);
     }
   },
 
   Checkout: async (req, res, next) => {
     try {
-      const { LOCATION_ID, USER_ID, CHECKIN_TYPE_NAME } = req.body;
+      const { LOCATION_ID, USER_ID, CHECKOUT_TYPE_CD } = req.body;
       if (!LOCATION_ID)
         return res
           .status(400)
@@ -37,14 +36,15 @@ const attendanceController = {
       if (!USER_ID) {
         return res.status(400).json({ err: 1, mess: "User not exited" });
       }
-      if (!CHECKIN_TYPE_NAME) {
-        return res.status(400).json({ err: 1, mess: "Type must not be empty" });
+      if (!CHECKOUT_TYPE_CD) {
+        return res
+          .status(400)
+          .json({ err: 1, mess: "Checkout_Type_cd must not be empty" });
       }
 
       const responsive = await attendanceServices.checkOut(req.body);
       return res.status(200).json(responsive);
     } catch (error) {
-      console.log(error);
       next(error);
     }
   },
@@ -53,8 +53,7 @@ const attendanceController = {
       const responsive = await attendanceServices.getAllByQuery(req.body);
       return res.status(200).json(responsive);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
   getUserId: async (req, res) => {
@@ -66,8 +65,7 @@ const attendanceController = {
       const response = await attendanceServices.getUserId({ id });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
     }
   },
   deleteAttendance: async (req, res) => {
@@ -77,8 +75,50 @@ const attendanceController = {
       const response = await attendanceServices.deleteAttendance({ id });
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
-      http_errors.internalServerError(res);
+      next(error);
+    }
+  },
+  getWorkingHour: async (req, res, next) => {
+    try {
+      const { USER_ID, FROM_DATE, TO_DATE } = req.params;
+
+      if (!USER_ID || !FROM_DATE || !TO_DATE)
+        return res.status(400).json("Require all field must not be empty");
+      if (!isValidDate(FROM_DATE) || !isValidDate(TO_DATE))
+        return res.status(400).json("Date is not in the correct format");
+
+      const response = await attendanceServices.getWorkingHours(req.params);
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  countuserCheckInByDate: async (req, res, next) => {
+    try {
+      const DATE = req.params.DATE;
+      if (!DATE) return res.status(400).json("DATE must not be empty!");
+      if (!isValidDate(DATE))
+        return res.status(400).json("DATE is not in the correct format");
+      const response = await attendanceServices.countUserCheckedInByDate(
+        req.params
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  countuserCheckOutByDate: async (req, res, next) => {
+    try {
+      const DATE = req.params.DATE;
+      if (!DATE) return res.status(400).json("DATE must not be empty!");
+      if (!isValidDate(DATE))
+        return res.status(400).json("DATE is not in the correct format");
+      const response = await attendanceServices.countUserCheckedOutByDate(
+        req.params
+      );
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
     }
   },
 };
