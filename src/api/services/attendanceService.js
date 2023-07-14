@@ -177,8 +177,8 @@ const attendanceServices = {
           where,
           attributes: [
             "USER_ID",
-            "CHECK_IN_TIME",
-            "CHECK_OUT_TIME",
+            "CHECK_IN_DATE_TIME",
+            "CHECK_OUT_DATE_TIME",
             [
               db.sequelize.literal(
                 `CASE 
@@ -256,65 +256,6 @@ const attendanceServices = {
     });
   },
 
-  // getWorkingHours: async ({ USER_ID, FROM_DATE, TO_DATE }) => {
-  //   return new Promise(async (resolve, reject) => {
-  //     try {
-  //       const moment = require("moment");
-
-  //       // Tạo đối tượng Moment cho ngày bắt đầu và kết thúc
-  //       const fromDate = moment(FROM_DATE);
-  //       const toDate = moment(TO_DATE);
-  //       const CHECK_IN = await db.User_Attendances.findOne({
-  //         where: {
-  //           USER_ID: USER_ID,
-  //           CHECK_IN_TIME: {
-  //             [db.Sequelize.Op.between]: [
-  //               fromDate.format("YYYY-MM-DD 00:00:00"),
-  //               toDate.format("YYYY-MM-DD 23:59:59"),
-  //             ],
-  //           },
-  //         },
-  //         order: [["CREATED_DATE", "ASC"]],
-  //         raw: true,
-  //       });
-  //       if (!CHECK_IN)
-  //         throw createError.NotFound(
-  //           "No check-in information found for this user on this date."
-  //         );
-
-  //       const CHECK_OUT = await db.User_Attendances.findOne({
-  //         where: {
-  //           USER_ID: USER_ID,
-  //           CHECK_OUT_TIME: {
-  //             [db.Sequelize.Op.between]: [
-  //               fromDate.format("YYYY-MM-DD 00:00:00"),
-  //               toDate.format("YYYY-MM-DD 23:59:59"),
-  //             ],
-  //           },
-  //         },
-  //         order: [[db.Sequelize.literal("CREATED_DATE"), "DESC"]],
-  //         raw: true,
-  //       });
-
-  //       if (!CHECK_OUT)
-  //         throw createError.NotFound(
-  //           "No check-in information found for this user on this date."
-  //         );
-  //       const checkin_time = CHECK_IN.CHECK_IN_TIME;
-  //       const checkout_time = CHECK_OUT.CHECK_OUT_TIME;
-  //       const total = caculatorWorkingTime({ checkin_time, checkout_time });
-  //       resolve({
-  //         USER_ID: USER_ID,
-  //         FULL_NAME: "Trương Quốc Tuấn",
-  //         FROM_DATE: FROM_DATE,
-  //         TO_DATE: TO_DATE,
-  //         HOUR: total,
-  //       });
-  //     } catch (error) {
-  //       reject(error);
-  //     }
-  //   });
-  // },
   getWorkingHours: async ({ USER_ID, FROM_DATE, TO_DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -331,8 +272,6 @@ const attendanceServices = {
           attributes: [
             "USER_ID",
             [db.Sequelize.literal("DATE(CREATED_DATE)"), "ATTENDANCE_DATE"],
-            // [db.Sequelize.literal("TIME(CHECK_IN_TIME)"), "CHECK_IN_TIME"],
-            // [db.Sequelize.literal("TIME(CHECK_OUT_TIME)"), "CHECK_OUT_TIME"],
             "CHECK_IN_TIME",
             "CHECK_OUT_TIME",
           ],
@@ -365,7 +304,7 @@ const attendanceServices = {
         const countUserCheckin = await db.User_Attendances.count({
           where: {
             CREATED_DATE: { [Op.between]: [startOfDay, endOfDay] },
-            CHECK_IN_TIME: { [Op.not]: null },
+            CHECK_IN_DATE_TIME: { [Op.not]: null },
           },
         });
         resolve({
@@ -391,7 +330,7 @@ const attendanceServices = {
         const countUserCheckOut = await db.User_Attendances.count({
           where: {
             CREATED_DATE: { [Op.between]: [startOfDay, endOfDay] },
-            CHECK_OUT_TIME: { [Op.not]: null },
+            CHECK_OUT_DATE_TIME: { [Op.not]: null },
           },
         });
         resolve({
