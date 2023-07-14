@@ -59,7 +59,7 @@ const attendanceServices = {
 
           //tạo bảng
           const attendance = await db.User_Attendances.create({
-            CHECK_IN_TIME: toDay,
+            CHECK_IN_DATE_TIME: toDay,
             LOCATION_ID: LOCATION_ID,
             CHECKIN_STATUS_ID: CHECK_IN.id,
             USER_ID: USER_ID,
@@ -126,7 +126,7 @@ const attendanceServices = {
         if (isCheck[0].CHECKIN_STATUS_ID === CHECK_IN.id) {
           const toDay = moment();
           const attendance = await db.User_Attendances.create({
-            CHECK_OUT_TIME: toDay,
+            CHECK_OUT_DATE_TIME: toDay,
             LOCATION_ID: LOCATION_ID,
             CHECKIN_STATUS_ID: CHECK_OUT.id,
             USER_ID: USER_ID,
