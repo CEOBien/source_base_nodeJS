@@ -751,7 +751,7 @@ paths:
               $ref: "#/components/schemas/attendance"
             example:
               "USER_ID": "142"
-              "CHECK_IN_TIME": "2023/07/10"
+              "CHECK_IN_DATE_TIME": "2023/07/10"
       responses:
         "200":
           description: Success
