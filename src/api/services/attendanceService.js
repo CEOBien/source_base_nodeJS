@@ -272,8 +272,8 @@ const attendanceServices = {
           attributes: [
             "USER_ID",
             [db.Sequelize.literal("DATE(CREATED_DATE)"), "ATTENDANCE_DATE"],
-            "CHECK_IN_TIME",
-            "CHECK_OUT_TIME",
+            "CHECK_IN_DATE_TIME",
+            "CHECK_OUT_DATE_TIME",
           ],
           where: {
             USER_ID: USER_ID,

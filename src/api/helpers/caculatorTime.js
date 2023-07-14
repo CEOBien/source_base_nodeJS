@@ -33,12 +33,12 @@ const getWorkingHour = (LIST_USER_ATTENDANCE) => {
     for (let i = 0; i < LIST_USER_ATTENDANCE.length; i++) {
       const attendance = LIST_USER_ATTENDANCE[i];
       const attendanceDate = attendance.ATTENDANCE_DATE;
-      if (attendance.CHECK_IN_TIME) {
+      if (attendance.CHECK_IN_DATE_TIME) {
         temp = attendance;
       }
       if (attendance.CHECK_OUT_TIME && temp) {
-        const check_out_time = new Date(attendance.CHECK_OUT_TIME);
-        const check_in_time = new Date(temp.CHECK_IN_TIME);
+        const check_out_time = new Date(attendance.CHECK_OUT_DATE_TIME);
+        const check_in_time = new Date(temp.CHECK_IN_DATE_TIME);
         const totalWorks = Math.floor(
           (check_out_time - check_in_time) / 1000 / 60
         );
