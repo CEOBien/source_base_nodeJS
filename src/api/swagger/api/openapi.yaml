@@ -10,6 +10,7 @@ info:
   #   url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
+
   - url: http://wns.novasquare.vn:6345
   - url: http://192.168.1.21:8345
   - url: http://localhost:8345
