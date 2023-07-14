@@ -1,4 +1,3 @@
-node_modules
 build/
 src/config
 # node.js
@@ -6,10 +5,9 @@ src/config
 npm-debug.log
 yarn-error.log
 yarn.lock
-.env
+# .env
 .gitignore
-package-lock.json
-.vscode
+package-lock
 src/api/v1/swagger/node_modules
 src/api/v1/swagger/package-lock.json
 src/api/v1/swagger/log.txt
@@ -23,6 +21,4 @@ logger/recorded
 dist
 data
 uploads
-testData
-DigiCertGlobalRootCA.crt.pem
-src/api/swagger/
+.env.development.local
