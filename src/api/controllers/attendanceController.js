@@ -56,7 +56,7 @@ const attendanceController = {
       next(error);
     }
   },
-  getUserId: async (req, res,next) => {
+  getUserId: async (req, res, next) => {
     try {
       const id = req.params.id;
       if (!id) {
@@ -68,7 +68,7 @@ const attendanceController = {
       next(error);
     }
   },
-  deleteAttendance: async (req, res) => {
+  deleteAttendance: async (req, res, next) => {
     try {
       const id = req.params.id;
       if (!id) return res.status(200).json("Id not extied");
