@@ -3,7 +3,7 @@ const router = require("express").Router();
 
 router.post("/checkIn", attendanceController.Checkin);
 router.post("/checkOut", attendanceController.Checkout);
-router.get("/getAll", attendanceController.getAllByQuery);
+router.post("/getAllByQuery", attendanceController.getAllByQuery);
 router.get("/get/:id", attendanceController.getUserId);
 router.delete("/delete/:id", attendanceController.deleteAttendance);
 router.get(
