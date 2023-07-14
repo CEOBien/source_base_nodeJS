@@ -48,7 +48,7 @@ const attendanceController = {
       next(error);
     }
   },
-  getAllByQuery: async (req, res) => {
+  getAllByQuery: async (req, res, next) => {
     try {
       const responsive = await attendanceServices.getAllByQuery(req.body);
       return res.status(200).json(responsive);
@@ -56,7 +56,7 @@ const attendanceController = {
       next(error);
     }
   },
-  getUserId: async (req, res) => {
+  getUserId: async (req, res,next) => {
     try {
       const id = req.params.id;
       if (!id) {

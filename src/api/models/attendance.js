@@ -24,8 +24,8 @@ module.exports = (sequelize, DataTypes) => {
   User_Attendances.init(
     {
       USER_ID: DataTypes.INTEGER,
-      CHECK_IN_TIME: DataTypes.DATE,
-      CHECK_OUT_TIME: DataTypes.DATE,
+      CHECK_IN_DATE_TIME: DataTypes.DATE,
+      CHECK_OUT_DATE_TIME: DataTypes.DATE,
       LOCATION_ID: DataTypes.INTEGER,
       // CHECKIN_STATUS_ID: DataTypes.INTEGER,
       // CHECKIN_TYPE_ID: DataTypes.INTEGER,

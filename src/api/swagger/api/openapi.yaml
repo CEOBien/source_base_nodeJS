@@ -11,7 +11,7 @@ info:
   version: 1.0.0
 servers:
   - url: http://wns.novasquare.vn:6345
-  - url: http://192.168.1.25:8345
+  - url: http://192.168.1.21:8345
   - url: http://localhost:8345
 
 paths:
@@ -737,13 +737,21 @@ paths:
       # security:
       #   - JWT: []
 
-  /api/attendance/getAll:
-    get:
+  /api/attendance/getAllByQuery:
+    post:
       tags:
         - attendance checkin
       summary: get all attendance
       operationId: get all attendance
-
+      requestBody:
+        description: getAllByQuery
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/attendance"
+            example:
+              "USER_ID": "142"
+              "CHECK_IN_TIME": "2023/07/10"
       responses:
         "200":
           description: Success

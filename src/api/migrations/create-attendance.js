@@ -9,11 +9,11 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      CHECK_IN_TIME: {
+      CHECK_IN_DATE_TIME: {
         type: Sequelize.DATE,
         allowNull: false,
       },
-      CHECK_OUT_TIME: {
+      CHECK_OUT_DATE_TIME: {
         type: Sequelize.DATE,
         allowNull: false,
       },
