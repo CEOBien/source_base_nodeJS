@@ -32,7 +32,7 @@ module.exports = {
       // },
       CD: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       CREATED_DATE: {
         type: Sequelize.DATE,
