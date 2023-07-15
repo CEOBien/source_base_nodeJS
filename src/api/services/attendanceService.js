@@ -1,5 +1,5 @@
 const db = require("../models");
-const { getWorkingHour } = require("../helpers/caculatorTime");
+const { getWorkingHour, formatDay } = require("../helpers/caculatorTime");
 const moment = require("moment");
 const createError = require("http-errors");
 const { Op } = require("sequelize");
@@ -66,7 +66,7 @@ const attendanceServices = {
             CHECKIN_TYPE_ID: idType.id,
           });
           return resolve({
-            err: attendance ? 0 : 1,
+            status: attendance ? 200 : 400,
             mess: attendance ? "Checkin successfully" : "Error while checkin",
             attendance,
             links: {
@@ -134,7 +134,7 @@ const attendanceServices = {
           });
 
           return resolve({
-            err: attendance ? 0 : 1,
+            status: attendance ? 200 : 400,
             mess: attendance ? "Checkout successfully" : "Error while checkout",
             attendance,
             links: {
@@ -150,17 +150,17 @@ const attendanceServices = {
     });
   },
 
-  getAllByQuery: async ({ ...object }) => {
+  getAllByQuery: async (object) => {
     return new Promise(async (resolve, reject) => {
       try {
         const include = [
           {
             model: db.User_Attendance_Statuses,
-            attributes: ["name"],
+            attributes: ["NAME"],
           },
           {
             model: db.User_CheckIn_Types,
-            attributes: ["name"],
+            attributes: ["NAME"],
           },
         ];
 
@@ -168,7 +168,14 @@ const attendanceServices = {
 
         for (const key in object) {
           if (object.hasOwnProperty(key) && object[key]) {
-            where[key] = object[key];
+            if (key === "CHECK_IN_DATE_TIME" || key === "CHECK_OUT_DATE_TIME") {
+              const format = formatDay(object[key]);
+              where[key] = {
+                [Op.between]: [format.startOfDay, format.endOfDay],
+              };
+            } else {
+              where[key] = object[key];
+            }
           }
         }
 
@@ -181,10 +188,10 @@ const attendanceServices = {
             "CHECK_OUT_DATE_TIME",
             [
               db.sequelize.literal(
-                `CASE 
-                   WHEN COALESCE( CHECK_IN_TIME) IS NULL THEN 'NULL'
-                   WHEN HOUR(CHECK_IN_TIME) BETWEEN 7 AND 8 THEN 'ONTIME' 
-                   ELSE 'DELAYED' 
+                `CASE
+                   WHEN COALESCE( CHECK_IN_DATE_TIME) IS NULL THEN 'NULL'
+                   WHEN HOUR(CHECK_IN_DATE_TIME) BETWEEN 7 AND 8 THEN 'ONTIME'
+                   ELSE 'DELAYED'
                  END`
               ),
               "CHECK_IN_STATUS",
@@ -192,19 +199,18 @@ const attendanceServices = {
             [
               db.sequelize.literal(
                 `CASE
-                 WHEN COALESCE( CHECK_OUT_TIME) IS NULL THEN 'WORKING' 
-                 WHEN HOUR(CHECK_OUT_TIME) BETWEEN 17 AND 23 AND MINUTE(CHECK_OUT_TIME) BETWEEN 30 AND 59 THEN 'ONTIME' ELSE 'SOON' END`
+                 WHEN COALESCE( CHECK_OUT_DATE_TIME) IS NULL THEN 'WORKING'
+                 WHEN HOUR(CHECK_OUT_DATE_TIME) BETWEEN 17 AND 23 AND MINUTE(CHECK_OUT_DATE_TIME) BETWEEN 30 AND 59 THEN 'ONTIME' ELSE 'SOON' END`
               ),
               "CHECK_OUT_STATUS",
             ],
           ],
           order: [["USER_ID", "ASC"]],
         });
-        console.log(checkRequireDataRequest(getAll));
         if (!checkRequireDataRequest(getAll))
-          throw createError.NotFound("Not found data");
+          throw createError.NotFound("Data not found ");
         resolve({
-          err: 0,
+          status: 200,
           mess: "Get list successfully",
           getAll,
           links: {
@@ -229,7 +235,7 @@ const attendanceServices = {
           throw createError.NotFound("Checkin not data");
         }
         resolve({
-          err: getUserId ? 0 : 1,
+          status: getUserId ? 200 : 400,
           mess: "Get userID successfully",
           getUserId,
         });
@@ -245,7 +251,7 @@ const attendanceServices = {
           where: { id: id },
         });
         resolve({
-          err: deleteAttendance ? 0 : 1,
+          status: deleteAttendance ? 200 : 400,
           mess: deleteAttendance
             ? "delete record successfully"
             : "Error while delete",
@@ -268,6 +274,14 @@ const attendanceServices = {
         const toDateStr = moment(toDate)
           .endOf("day")
           .format("YYYY-MM-DD HH:mm:ss");
+
+        const isUserId = await db.User_Attendances.findOne({
+          where: { USER_ID: USER_ID },
+          raw: true,
+        });
+        //To check whether a user exists or not
+        if (!isUserId) throw createError.NotFound("User_id not found ");
+
         const list_user_attendace = await db.User_Attendances.findAll({
           attributes: [
             "USER_ID",
@@ -286,8 +300,16 @@ const attendanceServices = {
           },
           raw: true,
         });
+
+        if (list_user_attendace.length === 0)
+          throw createError.NotFound("Data not found ");
+
         const result = getWorkingHour(list_user_attendace);
-        resolve(result);
+        resolve({
+          status: 200,
+          message: "Get list user work hour successfully",
+          result,
+        });
       } catch (error) {
         reject(error);
       }
@@ -296,19 +318,17 @@ const attendanceServices = {
   countUserCheckedInByDate: async ({ DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const momentDate = moment(DATE).startOf("day");
-        const startOfDay = momentDate
-          .startOf("day")
-          .format("YYYY-MM-DD HH:mm:ss");
-        const endOfDay = momentDate.endOf("day").format("YYYY-MM-DD HH:mm:ss");
+        const format = formatDay(DATE);
         const countUserCheckin = await db.User_Attendances.count({
           where: {
-            CREATED_DATE: { [Op.between]: [startOfDay, endOfDay] },
+            CREATED_DATE: {
+              [Op.between]: [format.startOfDay, format.endOfDay],
+            },
             CHECK_IN_DATE_TIME: { [Op.not]: null },
           },
         });
         resolve({
-          err: countUserCheckin ? 0 : 1,
+          status: countUserCheckin ? 200 : 400,
           mess: countUserCheckin
             ? "List of users who have checked in"
             : "get user checked in not found",
@@ -322,19 +342,17 @@ const attendanceServices = {
   countUserCheckedOutByDate: async ({ DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const momentDate = moment(DATE).startOf("day");
-        const startOfDay = momentDate
-          .startOf("day")
-          .format("YYYY-MM-DD HH:mm:ss");
-        const endOfDay = momentDate.endOf("day").format("YYYY-MM-DD HH:mm:ss");
+        const format = formatDay(DATE);
         const countUserCheckOut = await db.User_Attendances.count({
           where: {
-            CREATED_DATE: { [Op.between]: [startOfDay, endOfDay] },
+            CREATED_DATE: {
+              [Op.between]: [format.startOfDay, format.endOfDay],
+            },
             CHECK_OUT_DATE_TIME: { [Op.not]: null },
           },
         });
         resolve({
-          err: countUserCheckOut ? 0 : 1,
+          status: countUserCheckOut ? 200 : 400,
           mess: countUserCheckOut
             ? "List of users who have checked out"
             : "get user checked out not found",

@@ -83,7 +83,7 @@ const attendanceController = {
       const { USER_ID, FROM_DATE, TO_DATE } = req.params;
 
       if (!USER_ID || !FROM_DATE || !TO_DATE)
-        return res.status(400).json("Require all field must not be empty");
+        return res.status(400).json("Require all parameter must not be empty");
       if (!isValidDate(FROM_DATE) || !isValidDate(TO_DATE))
         return res.status(400).json("Date is not in the correct format");
 
