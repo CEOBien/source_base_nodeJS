@@ -8,11 +8,11 @@ yarn.lock
 # .env
 .gitignore
 package-lock
-src/api/v1/swagger/node_modules
-src/api/v1/swagger/package-lock.json
-src/api/v1/swagger/log.txt
-src/api/v1/swagger/start.sh
-src/api/v1/swagger/up.sh
+src/api/swagger/node_modules
+src/api/swagger/package-lock.json
+src/api/swagger/log.txt
+src/api/swagger/start.sh
+src/api/swagger/up.sh
 up.sh
 start.sh
 log.txt
