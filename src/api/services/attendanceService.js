@@ -3,6 +3,7 @@ const { getWorkingHour, formatDay } = require("../helpers/caculatorTime");
 const moment = require("moment");
 const createError = require("http-errors");
 const { Op } = require("sequelize");
+const { dataGetAllUser } = require("../helpers/api");
 require("dotenv").config();
 
 const checkRequireDataRequest = require("../helpers/checkRequireDataRequest");
@@ -265,6 +266,11 @@ const attendanceServices = {
   getWorkingHours: async ({ USER_ID, FROM_DATE, TO_DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
+        const result1 = await dataGetAllUser();
+        const data = result1.data;
+        const isCheck = data.elements.find((element) => element.id == USER_ID);
+        if (!isCheck) return res.status(400).json("User_id not found");
+
         const moment = require("moment");
 
         // Tạo đối tượng Moment cho ngày bắt đầu và kết thúc
@@ -274,13 +280,6 @@ const attendanceServices = {
         const toDateStr = moment(toDate)
           .endOf("day")
           .format("YYYY-MM-DD HH:mm:ss");
-
-        const isUserId = await db.User_Attendances.findOne({
-          where: { USER_ID: USER_ID },
-          raw: true,
-        });
-        //To check whether a user exists or not
-        if (!isUserId) throw createError.NotFound("User_id not found ");
 
         const list_user_attendace = await db.User_Attendances.findAll({
           attributes: [
@@ -304,7 +303,7 @@ const attendanceServices = {
         if (list_user_attendace.length === 0)
           throw createError.NotFound("Data not found ");
 
-        const result = getWorkingHour(list_user_attendace);
+        const result = getWorkingHour(list_user_attendace, data);
         resolve({
           status: 200,
           message: "Get list user work hour successfully",
