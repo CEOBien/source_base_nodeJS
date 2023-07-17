@@ -233,11 +233,11 @@ const attendanceServices = {
           raw: true,
         });
         if (!getUserId) {
-          throw createError.NotFound("Checkin not data");
+          resolve({ status: 200, mess: "Checkin not data" });
         }
         resolve({
           status: getUserId ? 200 : 400,
-          mess: "Get userID successfully",
+          mess: getUserId ? "Get userID successfully" : "Not found",
           getUserId,
         });
       } catch (error) {
