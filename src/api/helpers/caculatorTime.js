@@ -39,7 +39,6 @@ const getWorkingHour = (LIST_USER_ATTENDANCE) => {
 
         //thêm key
         resultObj[attendanceDate].userId = attendance.USER_ID;
-        resultObj[attendanceDate].Name = "Trương Quốc Tuấn";
         resultObj[attendanceDate].date = attendanceDate;
 
         //Định dạng lại giờ

@@ -169,9 +169,9 @@ const attendanceServices = {
         for (const key in object) {
           if (object.hasOwnProperty(key) && object[key]) {
             if (key === "CHECK_IN_DATE_TIME" || key === "CHECK_OUT_DATE_TIME") {
-              const format = formatDay(object[key]);
+              const objectDay = formatDay(object[key]);
               where[key] = {
-                [Op.between]: [format.startOfDay, format.endOfDay],
+                [Op.between]: [objectDay.startOfDay, objectDay.endOfDay],
               };
             } else {
               where[key] = object[key];
@@ -205,7 +205,6 @@ const attendanceServices = {
               "CHECK_OUT_STATUS",
             ],
           ],
-          order: [["USER_ID", "ASC"]],
         });
         if (!checkRequireDataRequest(getAll))
           throw createError.NotFound("Data not found ");
@@ -318,11 +317,11 @@ const attendanceServices = {
   countUserCheckedInByDate: async ({ DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const format = formatDay(DATE);
+        const objectDay = formatDay(DATE);
         const countUserCheckin = await db.User_Attendances.count({
           where: {
             CREATED_DATE: {
-              [Op.between]: [format.startOfDay, format.endOfDay],
+              [Op.between]: [objectDay.startOfDay, objectDay.endOfDay],
             },
             CHECK_IN_DATE_TIME: { [Op.not]: null },
           },
@@ -342,11 +341,11 @@ const attendanceServices = {
   countUserCheckedOutByDate: async ({ DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
-        const format = formatDay(DATE);
+        const objectDay = formatDay(DATE);
         const countUserCheckOut = await db.User_Attendances.count({
           where: {
             CREATED_DATE: {
-              [Op.between]: [format.startOfDay, format.endOfDay],
+              [Op.between]: [objectDay.startOfDay, objectDay.endOfDay],
             },
             CHECK_OUT_DATE_TIME: { [Op.not]: null },
           },
