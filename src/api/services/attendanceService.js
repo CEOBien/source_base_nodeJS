@@ -209,7 +209,7 @@ const attendanceServices = {
           order: [["CREATED_DATE", "ASC"]],
         });
         if (!checkRequireDataRequest(getAll))
-          throw createError.NotFound("Data not found ");
+          resolve({ status: 200, mess: "Data not found" });
         resolve({
           status: 200,
           mess: "Get list successfully",
@@ -301,7 +301,7 @@ const attendanceServices = {
         });
 
         if (list_user_attendace.length === 0)
-          throw createError.NotFound("Data not found ");
+          resolve({ status: 200, mess: "Data not found" });
 
         const result = getWorkingHour(list_user_attendace, data);
         resolve({
