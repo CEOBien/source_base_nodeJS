@@ -1,6 +1,7 @@
 const attendanceServices = require("../services/attendanceService");
 const http_errors = require("../middlewares/handle_error");
 const isValidDate = require("../helpers/validateDay");
+
 const attendanceController = {
   Checkin: async (req, res, next) => {
     try {

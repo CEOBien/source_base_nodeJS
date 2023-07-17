@@ -6,7 +6,7 @@ src/config
 npm-debug.log
 yarn-error.log
 yarn.lock
-.env
+# .env
 .gitignore
 package-lock.json
 .vscode
