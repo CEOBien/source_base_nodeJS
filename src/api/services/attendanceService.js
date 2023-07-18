@@ -111,13 +111,14 @@ const attendanceServices = {
           order: [["CREATED_DATE", "DESC"]],
           raw: true,
         });
-
         if (!Number.isInteger(LOCATION_ID)) {
           throw createError.NotFound("It must be number");
         }
         if (!CHECK_IN) throw createError.NotFound("Status CD `IN` not found ");
         if (!CHECK_OUT)
           throw createError.NotFound("Status CD `OUT` not found ");
+
+
         if (isCheck[0] === undefined)
           throw createError.NotFound("You must checkin before checkout");
 
@@ -206,7 +207,8 @@ const attendanceServices = {
               "CHECK_OUT_STATUS",
             ],
           ],
-          order: [["CREATED_DATE", "ASC"]],
+          // order: [["CREATED_DATE", "ASC"]],
+          raw: true
         });
         if (!checkRequireDataRequest(getAll))
           resolve({ status: 200, mess: "Data not found" });
@@ -219,6 +221,7 @@ const attendanceServices = {
             checkOut: `${process.env.HYBER_LINK}/api/v1/attendance/checkOut`,
           },
         });
+        
       } catch (error) {
         reject(error);
       }
