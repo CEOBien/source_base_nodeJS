@@ -71,8 +71,8 @@ const attendanceServices = {
             mess: attendance ? "Checkin successfully" : "Error while checkin",
             attendance,
             links: {
-              checkout: `${process.env.HYBER_LINK}/api/v1/attendance/checkOut`,
-              getAll: `${process.env.HYBER_LINK}/api/attendance/getAll`,
+              checkout: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkOut`,
+              getAll: `${process.env.USER_HYBER_LINK}/api/attendance/getAll`,
             },
           });
         }
@@ -139,8 +139,8 @@ const attendanceServices = {
             mess: attendance ? "Checkout successfully" : "Error while checkout",
             attendance,
             links: {
-              checkIn: `${process.env.HYBER_LINK}/api/v1/attendance/checkIn`,
-              getAll: `${process.env.HYBER_LINK}/api/attendance/getAll`,
+              checkIn: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkIn`,
+              getAll: `${process.env.USER_HYBER_LINK}/api/attendance/getAll`,
             },
           });
         }
@@ -206,7 +206,6 @@ const attendanceServices = {
               "CHECK_OUT_STATUS",
             ],
           ],
-          order: [["CREATED_DATE", "ASC"]],
         });
         if (!checkRequireDataRequest(getAll))
           resolve({ status: 200, mess: "Data not found" });
@@ -215,8 +214,8 @@ const attendanceServices = {
           mess: "Get list successfully",
           getAll,
           links: {
-            checkIn: `${process.env.HYBER_LINK}/api/v1/attendance/checkIn`,
-            checkOut: `${process.env.HYBER_LINK}/api/v1/attendance/checkOut`,
+            checkIn: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkIn`,
+            checkOut: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkOut`,
           },
         });
       } catch (error) {
@@ -227,8 +226,16 @@ const attendanceServices = {
   getUserId: async ({ id }) => {
     return new Promise(async (resolve, reject) => {
       try {
+        const currentTime = new Date();
+        const startOfDay = new Date(currentTime.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(currentTime.setHours(23, 59, 59, 999));
         const getUserId = await db.User_Attendances.findOne({
-          where: { USER_ID: id },
+          where: {
+            USER_ID: id,
+            CREATED_DATE: {
+              [db.Sequelize.Op.between]: [startOfDay, endOfDay],
+            },
+          },
           order: [["CREATED_DATE", "DESC"]],
           raw: true,
         });
@@ -269,9 +276,7 @@ const attendanceServices = {
         const result1 = await dataGetAllUser();
         const data = result1.data;
         const isCheck = data.elements.find((element) => element.id == USER_ID);
-        if (!isCheck) return res.status(400).json("User_id not found");
-
-        const moment = require("moment");
+        if (!isCheck) resolve({ status: 400, mess: "User_id not found" });
 
         // Tạo đối tượng Moment cho ngày bắt đầu và kết thúc
         const fromDate = moment(FROM_DATE);
