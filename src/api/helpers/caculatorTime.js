@@ -3,7 +3,11 @@ const { Op } = require("sequelize");
 const { dataGetAllUser } = require("./api");
 
 const calculateStatus = (newMinutes) => {
-  return newMinutes > 480  ? "GREAT" : newMinutes === 480 ? "OK" : "NOT OK";
+  return newMinutes > 480
+    ? "GREAT"
+    : newMinutes === 480
+    ? "OK"
+    : "Not enough 8 hours";
 };
 
 const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
@@ -17,19 +21,22 @@ const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
       const attendanceDate = attendance.ATTENDANCE_DATE;
 
       //save check_in_date_time into temp variable
-      if (attendance.CHECK_IN_DATE_TIME) {
+      if (attendance.CHECK_IN_DATE_TIME !== null) {
         temp = attendance;
       }
 
-      if (attendance.CHECK_OUT_DATE_TIME && temp) {
+      if (attendance.CHECK_OUT_DATE_TIME !== null && temp) {
         const check_out_time = new Date(attendance.CHECK_OUT_DATE_TIME);
+
         const check_in_time = new Date(temp.CHECK_IN_DATE_TIME);
+
         const totalWorks = Math.floor(
           (check_out_time - check_in_time) / 1000 / 60
         );
         // Định dạng giờ:phút
         const hours = Math.floor(totalWorks / 60);
         const minutes = totalWorks % 60;
+
         // Cập nhật đối tượng kết quả
         if (!resultObj[attendanceDate]) {
           resultObj[attendanceDate] = { totalWorkHour: "00:00" };
@@ -43,14 +50,18 @@ const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
         const newHours =
           prevHours + hours + Math.floor((prevMinutes + minutes) / 60);
         const newMinutes = (prevMinutes + minutes) % 60;
-        const caculatorStatusFollowMinutes = (newHours * 60) + newMinutes;
+        const caculatorStatusFollowMinutes = newHours * 60 + newMinutes;
 
         //thêm key
-        
-        resultObj[attendanceDate].status = calculateStatus(caculatorStatusFollowMinutes);
+
+        resultObj[attendanceDate].status = calculateStatus(
+          caculatorStatusFollowMinutes
+        );
         resultObj[attendanceDate].userId = attendance.USER_ID;
-        resultObj[attendanceDate].name = user_name ? user_name.FULL_NAME : "";
-        resultObj[attendanceDate].date = attendanceDate;
+        resultObj[attendanceDate].fullName = user_name
+          ? user_name.FULL_NAME
+          : "";
+        resultObj[attendanceDate].workingDate = attendanceDate;
 
         //Định dạng lại giờ
         resultObj[attendanceDate].totalWorkHour = `${newHours
@@ -58,8 +69,12 @@ const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
           .padStart(2, "0")}:${newMinutes.toString().padStart(2, "0")}`;
       }
     }
+    const sortedData = Object.entries(resultObj).sort((a, b) =>
+      a[0].localeCompare(b[0])
+    );
+    const sortedObject = Object.fromEntries(sortedData);
 
-    return resultObj;
+    return sortedObject;
   } catch (error) {
     console.log(error);
   }
