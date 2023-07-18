@@ -5,7 +5,7 @@ src/config
 npm-debug.log
 yarn-error.log
 yarn.lock
-# .env
+.env
 .gitignore
 package-lock
 src/api/swagger/node_modules
@@ -21,4 +21,5 @@ logger/recorded
 dist
 data
 uploads
+
 .env.development.local

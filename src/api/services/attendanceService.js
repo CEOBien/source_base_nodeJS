@@ -111,13 +111,14 @@ const attendanceServices = {
           order: [["CREATED_DATE", "DESC"]],
           raw: true,
         });
-
         if (!Number.isInteger(LOCATION_ID)) {
           throw createError.NotFound("It must be number");
         }
         if (!CHECK_IN) throw createError.NotFound("Status CD `IN` not found ");
         if (!CHECK_OUT)
           throw createError.NotFound("Status CD `OUT` not found ");
+
+
         if (isCheck[0] === undefined)
           throw createError.NotFound("You must checkin before checkout");
 
@@ -218,6 +219,7 @@ const attendanceServices = {
             checkOut: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkOut`,
           },
         });
+        
       } catch (error) {
         reject(error);
       }
