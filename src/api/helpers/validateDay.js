@@ -24,4 +24,13 @@ const isValidDate = (dateString) => {
   return day > 0 && day <= maxDay;
 };
 
-module.exports = isValidDate;
+const isValidDateTime = (datetime) =>{
+  var formats = [
+    moment.ISO_8601,
+    "MM/DD/YYYY  :)  HH*mm*ss"
+    ]
+  return moment(datetime, formats, true).isValid();
+  // moment(datetime, moment.ISO_8601, true).isValid();
+}
+
+module.exports = { isValidDateTime, isValidDate };
