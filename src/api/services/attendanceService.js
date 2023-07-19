@@ -7,11 +7,16 @@ const { dataGetAllUser } = require("../helpers/api");
 require("dotenv").config();
 
 const checkRequireDataRequest = require("../helpers/checkRequireDataRequest");
+const { checkinResult } = require("../helpers/checkin");
 
 const attendanceServices = {
   checkIn: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
+        const resultUser = await dataGetAllUser();
+        const data = resultUser.data;
+        const isUser = data.elements.find((element) => element.id == USER_ID);
+        if (!isUser) resolve({ status: 400, mess: "User_id not found" });
         //trạng thái checkin checkout
         var CHECK_IN = await db.User_Attendance_Statuses.findOne({
           where: { CD: "IN" },
@@ -66,10 +71,11 @@ const attendanceServices = {
             USER_ID: USER_ID,
             CHECKIN_TYPE_ID: idType.id,
           });
+          const attendanceResult = checkinResult(attendance, data)
           return resolve({
-            status: attendance ? 200 : 400,
-            mess: attendance ? "Checkin successfully" : "Error while checkin",
-            attendance,
+            status: attendanceResult ? 200 : 400,
+            mess: attendanceResult ? "Checkin successfully" : "Error while checkin",
+            attendanceResult,
             links: {
               checkout: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkOut`,
               getAll: `${process.env.USER_HYBER_LINK}/api/attendance/getAll`,
@@ -85,6 +91,10 @@ const attendanceServices = {
   checkOut: async ({ USER_ID, LOCATION_ID, CHECKOUT_TYPE_CD }) => {
     return new Promise(async (resolve, reject) => {
       try {
+        const resultUser = await dataGetAllUser();
+        const data = resultUser.data;
+        const isUser = data.elements.find((element) => element.id == USER_ID);
+        if (!isUser) resolve({ status: 400, mess: "User_id not found" });
         //status
         var CHECK_IN = await db.User_Attendance_Statuses.findOne({
           where: { CD: "IN" },
@@ -134,11 +144,11 @@ const attendanceServices = {
             USER_ID: USER_ID,
             CHECKIN_TYPE_ID: idType.id,
           });
-
+          const attendanceResult = checkinResult(attendance, data)
           return resolve({
-            status: attendance ? 200 : 400,
-            mess: attendance ? "Checkout successfully" : "Error while checkout",
-            attendance,
+            status: attendanceResult ? 200 : 400,
+            mess: attendanceResult ? "Checkout successfully" : "Error while checkout",
+            attendanceResult,
             links: {
               checkIn: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkIn`,
               getAll: `${process.env.USER_HYBER_LINK}/api/attendance/getAll`,
