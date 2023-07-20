@@ -89,7 +89,10 @@ const attendanceController = {
           .json("From_date must not be greater than to_date");
       if (!Number(USER_ID))
         return res.status(400).json("User_id must be number");
-      if (!isValidDate.isValidDate(FROM_DATE) || !isValidDate.isValidDate(TO_DATE))
+      if (
+        !isValidDate.isValidDateTime(FROM_DATE) ||
+        !isValidDate.isValidDateTime(TO_DATE)
+      )
         return res.status(400).json("Date is not in the correct format");
 
       const response = await attendanceServices.getWorkingHours(req.params);
@@ -106,9 +109,11 @@ const attendanceController = {
         return res
           .status(400)
           .json("From_date must not be greater than to_date");
-      if (TYPE !== 'WRO')
-        return res.status(400).json("Type is WRO");
-      if (!isValidDate.isValidDateTime(FROM_DATE) || !isValidDate.isValidDateTime(TO_DATE))
+      if (TYPE !== "WRO") return res.status(400).json("Type is WRO");
+      if (
+        !isValidDate.isValidDateTime(FROM_DATE) ||
+        !isValidDate.isValidDateTime(TO_DATE)
+      )
         return res.status(400).json("Date is not in the correct format");
 
       const response = await attendanceServices.getCheckInStatus(req.params);
@@ -121,7 +126,7 @@ const attendanceController = {
     try {
       const DATE = req.params.DATE;
       if (!DATE) return res.status(400).json("DATE must not be empty!");
-      if (!isValidDate(DATE))
+      if (!isValidDate.isValidDateTime(DATE))
         return res.status(400).json("DATE is not in the correct format");
       const response = await attendanceServices.countUserCheckedInByDate(
         req.params
@@ -135,7 +140,7 @@ const attendanceController = {
     try {
       const DATE = req.params.DATE;
       if (!DATE) return res.status(400).json("DATE must not be empty!");
-      if (!isValidDate(DATE))
+      if (!isValidDate.isValidDateTime(DATE))
         return res.status(400).json("DATE is not in the correct format");
       const response = await attendanceServices.countUserCheckedOutByDate(
         req.params

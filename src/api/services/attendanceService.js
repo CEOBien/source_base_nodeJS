@@ -72,14 +72,16 @@ const attendanceServices = {
             USER_ID: USER_ID,
             CHECKIN_TYPE_ID: idType.id,
           });
-          const attendanceResult = checkinResult(attendance, data)
+          const attendanceResult = checkinResult(attendance, data);
           return resolve({
             status: attendanceResult ? 200 : 400,
-            mess: attendanceResult ? "Checkin successfully" : "Error while checkin",
+            mess: attendanceResult
+              ? "Checkin successfully"
+              : "Error while checkin",
             attendanceResult,
             links: {
-              checkout: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkOut`,
-              getAll: `${process.env.USER_HYBER_LINK}/api/attendance/getAll`,
+              checkout: `${process.env.USER_DATA_BASE_URL}/api/v1/attendance/checkOut`,
+              getAll: `${process.env.USER_DATA_BASE_URL}/api/attendance/getAll`,
             },
           });
         }
@@ -129,7 +131,6 @@ const attendanceServices = {
         if (!CHECK_OUT)
           throw createError.NotFound("Status CD `OUT` not found ");
 
-
         if (isCheck[0] === undefined)
           throw createError.NotFound("You must checkin before checkout");
 
@@ -145,14 +146,16 @@ const attendanceServices = {
             USER_ID: USER_ID,
             CHECKIN_TYPE_ID: idType.id,
           });
-          const attendanceResult = checkinResult(attendance, data)
+          const attendanceResult = checkinResult(attendance, data);
           return resolve({
             status: attendanceResult ? 200 : 400,
-            mess: attendanceResult ? "Checkout successfully" : "Error while checkout",
+            mess: attendanceResult
+              ? "Checkout successfully"
+              : "Error while checkout",
             attendanceResult,
             links: {
-              checkIn: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkIn`,
-              getAll: `${process.env.USER_HYBER_LINK}/api/attendance/getAll`,
+              checkIn: `${process.env.USER_DATA_BASE_URL}/api/v1/attendance/checkIn`,
+              getAll: `${process.env.USER_DATA_BASE_URL}/api/attendance/getAll`,
             },
           });
         }
@@ -182,9 +185,14 @@ const attendanceServices = {
         for (const key in object) {
           if (object.hasOwnProperty(key) && object[key]) {
             if (key === "CHECK_IN_DATE_TIME" || key === "CHECK_OUT_DATE_TIME") {
-              const objectDay = formatDay(object[key]);
+              const splitDay = object[key].split("T")[0];
+
+              const dayStart = new Date(`${splitDay}T17:00:00.110Z`);
+              const endDay = `${splitDay}T16:59:59.308Z`;
+              dayStart.setDate(dayStart.getDate() - 1);
+
               where[key] = {
-                [Op.between]: [objectDay.startOfDay, objectDay.endOfDay],
+                [Op.between]: [dayStart, endDay],
               };
             } else {
               where[key] = object[key];
@@ -199,6 +207,7 @@ const attendanceServices = {
             "USER_ID",
             "CHECK_IN_DATE_TIME",
             "CHECK_OUT_DATE_TIME",
+            "LOCATION_ID",
             [
               db.sequelize.literal(
                 `CASE
@@ -226,11 +235,10 @@ const attendanceServices = {
           mess: "Get list successfully",
           getAll,
           links: {
-            checkIn: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkIn`,
-            checkOut: `${process.env.USER_HYBER_LINK}/api/v1/attendance/checkOut`,
+            checkIn: `${process.env.USER_DATA_BASE_URL}/api/v1/attendance/checkIn`,
+            checkOut: `${process.env.USER_DATA_BASE_URL}/api/v1/attendance/checkOut`,
           },
         });
-        
       } catch (error) {
         reject(error);
       }
@@ -291,14 +299,6 @@ const attendanceServices = {
         const isCheck = data.elements.find((element) => element.id == USER_ID);
         if (!isCheck) resolve({ status: 400, mess: "User_id not found" });
 
-        // Tạo đối tượng Moment cho ngày bắt đầu và kết thúc
-        const fromDate = moment(FROM_DATE);
-        const toDate = moment(TO_DATE);
-        const fromDateStr = moment(fromDate).format("YYYY-MM-DD HH:mm:ss");
-        const toDateStr = moment(toDate)
-          .endOf("day")
-          .format("YYYY-MM-DD HH:mm:ss");
-
         const list_user_attendace = await db.User_Attendances.findAll({
           attributes: [
             "USER_ID",
@@ -310,8 +310,8 @@ const attendanceServices = {
             USER_ID: USER_ID,
             CREATED_DATE: {
               [Op.between]: [
-                db.Sequelize.literal("'" + fromDateStr + "'"),
-                db.Sequelize.literal("'" + toDateStr + "'"),
+                db.Sequelize.literal("'" + FROM_DATE + "'"),
+                db.Sequelize.literal("'" + TO_DATE + "'"),
               ],
             },
           },
@@ -380,9 +380,9 @@ const attendanceServices = {
               "CHECK_OUT_STATUS",
             ],
           ],
-          raw: true
+          raw: true,
         });
-        let result = reportCheckin(getAll, data)
+        let result = reportCheckin(getAll, data);
         if (getAll.length === 0)
           resolve({ status: 200, mess: "Data not found" });
         resolve({
@@ -395,7 +395,7 @@ const attendanceServices = {
       }
     });
   },
-  
+
   countUserCheckedInByDate: async ({ DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -444,6 +444,5 @@ const attendanceServices = {
       }
     });
   },
-  
 };
 module.exports = attendanceServices;

@@ -19,6 +19,7 @@ const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
     for (let i = 0; i < LIST_USER_ATTENDANCE.length; i++) {
       const attendance = LIST_USER_ATTENDANCE[i];
       const attendanceDate = attendance.ATTENDANCE_DATE;
+      
 
       //save check_in_date_time into temp variable
       if (attendance.CHECK_IN_DATE_TIME !== null) {
@@ -61,7 +62,7 @@ const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
         resultObj[attendanceDate].fullName = user_name
           ? user_name.FULL_NAME
           : "";
-        resultObj[attendanceDate].workingDate = attendanceDate;
+        resultObj[attendanceDate].workingDate = attendance.CHECK_OUT_DATE_TIME;
 
         //Định dạng lại giờ
         resultObj[attendanceDate].totalWorkHour = `${newHours
@@ -69,10 +70,12 @@ const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
           .padStart(2, "0")}:${newMinutes.toString().padStart(2, "0")}`;
       }
     }
-    const sortedData = Object.entries(resultObj).sort((a, b) =>
-      a[0].localeCompare(b[0])
-    );
-    const sortedObject = Object.fromEntries(sortedData);
+
+    const sortedDates = Object.entries(resultObj).sort(function (a, b) {
+      return new Date(a).getTime() - new Date(b).getTime();
+    });
+
+    const sortedObject = Object.fromEntries(sortedDates);
 
     return sortedObject;
   } catch (error) {
@@ -80,11 +83,13 @@ const getWorkingHour = (LIST_USER_ATTENDANCE, data) => {
   }
 };
 
-const formatDay = (day) => {
+const formatDay = (DATE) => {
   try {
-    const momentDate = moment(day);
-    const startOfDay = momentDate.startOf("day").format("YYYY-MM-DD HH:mm:ss");
-    const endOfDay = momentDate.endOf("day").format("YYYY-MM-DD HH:mm:ss");
+    const splitDay = DATE.split("T")[0];
+
+    const startOfDay = new Date(`${splitDay}T17:00:00.110Z`);
+    startOfDay.setDate(startOfDay.getDate() - 1);
+    const endOfDay = `${splitDay}T16:59:59.308Z`;
     return { startOfDay, endOfDay };
   } catch (error) {
     console.log(error);
