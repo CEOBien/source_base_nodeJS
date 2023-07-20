@@ -11,6 +11,10 @@ router.get(
   attendanceController.getWorkingHour
 );
 router.get(
+  "/getCheckInStatus/:TYPE/:FROM_DATE/:TO_DATE",
+  attendanceController.getCheckInStatus
+);
+router.get(
   "/countUserCheckInByDate/:DATE",
   attendanceController.countuserCheckInByDate
 );

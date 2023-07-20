@@ -89,10 +89,29 @@ const attendanceController = {
           .json("From_date must not be greater than to_date");
       if (!Number(USER_ID))
         return res.status(400).json("User_id must be number");
-      if (!isValidDate(FROM_DATE) || !isValidDate(TO_DATE))
+      if (!isValidDate.isValidDate(FROM_DATE) || !isValidDate.isValidDate(TO_DATE))
         return res.status(400).json("Date is not in the correct format");
 
       const response = await attendanceServices.getWorkingHours(req.params);
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
+  getCheckInStatus: async (req, res, next) => {
+    try {
+      const { TYPE, FROM_DATE, TO_DATE } = req.params;
+
+      if (FROM_DATE > TO_DATE)
+        return res
+          .status(400)
+          .json("From_date must not be greater than to_date");
+      if (TYPE !== 'WRO')
+        return res.status(400).json("Type is WRO");
+      if (!isValidDate.isValidDateTime(FROM_DATE) || !isValidDate.isValidDateTime(TO_DATE))
+        return res.status(400).json("Date is not in the correct format");
+
+      const response = await attendanceServices.getCheckInStatus(req.params);
       return res.status(200).json(response);
     } catch (error) {
       next(error);

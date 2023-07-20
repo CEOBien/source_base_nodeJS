@@ -8,6 +8,7 @@ require("dotenv").config();
 
 const checkRequireDataRequest = require("../helpers/checkRequireDataRequest");
 const { checkinResult } = require("../helpers/checkin");
+const reportCheckin = require("../helpers/reportCheckin");
 
 const attendanceServices = {
   checkIn: async ({ USER_ID, LOCATION_ID, CHECKIN_TYPE_CD }) => {
@@ -331,6 +332,70 @@ const attendanceServices = {
       }
     });
   },
+  getCheckInStatus: async ({ TYPE, FROM_DATE, TO_DATE }) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const include = [
+          {
+            model: db.User_Attendance_Statuses,
+            attributes: ["NAME"],
+          },
+          {
+            model: db.User_CheckIn_Types,
+            attributes: ["NAME"],
+          },
+        ];
+        const resultUser = await dataGetAllUser();
+        const data = resultUser.data?.elements;
+        const getAll = await db.User_Attendances.findAndCountAll({
+          include,
+          where: {
+            CREATED_DATE: {
+              [Op.between]: [
+                db.Sequelize.literal("'" + FROM_DATE + "'"),
+                db.Sequelize.literal("'" + TO_DATE + "'"),
+              ],
+            },
+          },
+          attributes: [
+            "USER_ID",
+            "CHECK_IN_DATE_TIME",
+            "CHECK_OUT_DATE_TIME",
+            [
+              db.sequelize.literal(
+                `CASE
+                   WHEN COALESCE( CHECK_IN_DATE_TIME) IS NULL THEN 'NULL'
+                   WHEN HOUR(CHECK_IN_DATE_TIME) BETWEEN 7 AND 8 THEN 'ONTIME'
+                   ELSE 'DELAYED'
+                 END`
+              ),
+              "CHECK_IN_STATUS",
+            ],
+            [
+              db.sequelize.literal(
+                `CASE
+                 WHEN COALESCE( CHECK_OUT_DATE_TIME) IS NULL THEN 'WORKING'
+                 WHEN HOUR(CHECK_OUT_DATE_TIME) BETWEEN 17 AND 23 AND MINUTE(CHECK_OUT_DATE_TIME) BETWEEN 30 AND 59 THEN 'ONTIME' ELSE 'SOON' END`
+              ),
+              "CHECK_OUT_STATUS",
+            ],
+          ],
+          raw: true
+        });
+        let result = reportCheckin(getAll, data)
+        if (getAll.length === 0)
+          resolve({ status: 200, mess: "Data not found" });
+        resolve({
+          status: 200,
+          message: "Get list user work hour successfully",
+          result,
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
+  },
+  
   countUserCheckedInByDate: async ({ DATE }) => {
     return new Promise(async (resolve, reject) => {
       try {
@@ -379,5 +444,6 @@ const attendanceServices = {
       }
     });
   },
+  
 };
 module.exports = attendanceServices;
