@@ -4,6 +4,7 @@ const reportCheckin =  (attendance, dataUser) =>{
         const result = []
         for (let i = 0; i < dataUser.length; i++ ){
         let resultObj = {}
+        
             if(dataUser[i]?.COMPETTION_CODE !== dataUser[i-1]?.COMPETTION_CODE){
                 let filter = dataUser.filter((ele)=>
                     ele?.COMPETTION_CODE === dataUser[i]?.COMPETTION_CODE

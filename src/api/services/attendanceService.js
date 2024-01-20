@@ -184,13 +184,14 @@ const attendanceServices = {
 
         for (const key in object) {
           if (object.hasOwnProperty(key) && object[key]) {
-            if (key === "CHECK_IN_DATE_TIME" || key === "CHECK_OUT_DATE_TIME") {
+            if (key === "CHECK_IN_DATE_TIME" || key === "CHECK_OUT_DATE_TIME"|| key === "CREATED_DATE") {
               const splitDay = object[key].split("T")[0];
 
               const dayStart = new Date(`${splitDay}T17:00:00.110Z`);
               const endDay = `${splitDay}T16:59:59.308Z`;
-              dayStart.setDate(dayStart.getDate() - 1);
-
+              endDay.setDate(endDay.getDate() + 1);
+              console.log("dayStart", dayStart);
+              console.log("endDay", endDay);
               where[key] = {
                 [Op.between]: [dayStart, endDay],
               };
